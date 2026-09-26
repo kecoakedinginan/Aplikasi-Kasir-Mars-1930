@@ -172,6 +172,18 @@
             padding-bottom: 5px;
         }
 
+        /* Ringkasan Total Penjualan Harian di Tab 2 */
+        .daily-sales-summary {
+            background: #131c31;
+            border: 1px solid var(--accent-color);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .daily-sales-summary h3 { margin: 0 0 5px 0; font-size: 0.9rem; color: var(--muted-text); }
+        .daily-sales-summary div { font-size: 1.3rem; font-weight: bold; color: var(--success-color); }
+
         /* Riwayat Transaksi Kasir */
         .history-box {
             background: #0f172a;
@@ -179,14 +191,17 @@
             padding: 12px;
             border-radius: 8px;
             margin-top: 15px;
-            max-height: 200px;
+            max-height: 220px;
             overflow-y: auto;
         }
         .history-item {
             font-size: 0.85rem;
             border-bottom: 1px solid var(--border-color);
-            padding-bottom: 6px;
-            margin-bottom: 6px;
+            padding-bottom: 8px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
         }
 
         /* Preview Teks Laporan */
@@ -223,12 +238,25 @@
         <button class="tab-btn" onclick="switchTab(event, 'tab-laporan')">4. Export Laporan</button>
     </div>
 
-    <!-- TAB 1: MASTER MENU DENGAN KATEGORI -->
+    <!-- TAB 1: MASTER MENU & KATEGORI TERPISAH -->
     <div id="tab-master" class="tab-content active">
-        <h3>Kelola Daftar Menu & Kategori</h3>
+        <h3>Kelola Kategori & Daftar Menu</h3>
+        
+        <!-- Form Tambah Kategori -->
+        <div style="background: #131c31; padding: 12px; border-radius: 8px; margin-bottom: 15px; border: 1px solid var(--border-color);">
+            <label style="color: var(--accent-color); font-weight: bold;">Tambah Kategori Baru</label>
+            <div style="display: flex; gap: 8px; margin-top: 5px;">
+                <input type="text" id="inputKategoriBaru" placeholder="Contoh: Minuman">
+                <button class="btn" style="width: auto; margin-top: 0; padding: 8px 15px;" onclick="tambahKategori()">Tambah</button>
+            </div>
+        </div>
+
+        <!-- Form Tambah Menu dengan Dropdown Kategori -->
         <div class="form-group">
-            <label>Kategori Menu (Contoh: Terbul, Martabak Asin, Minuman)</label>
-            <input type="text" id="mKategori" placeholder="Contoh: Terbul">
+            <label>Pilih Kategori Menu</label>
+            <select id="mKategoriSelect">
+                <!-- Terisi otomatis dari list kategori -->
+            </select>
         </div>
         <div class="form-group">
             <label>Nama Menu</label>
@@ -236,7 +264,7 @@
         </div>
         <div class="form-group">
             <label>Harga Satuan (Rp)</label>
-            <input type="number" id="mHarga" placeholder="Contoh: 15000">
+            <input type="text" id="mHarga" placeholder="Contoh: 15.000" oninput="formatInputRupiah(this)">
         </div>
         <button class="btn" onclick="tambahMasterMenu()">Simpan Menu Baru</button>
 
@@ -249,6 +277,13 @@
     <!-- TAB 2: KASIR / TRANSAKSI HARIAN -->
     <div id="tab-kasir" class="tab-content">
         <h3>Input Transaksi Penjualan Harian</h3>
+        
+        <!-- Total Penjualan Harian Terlihat Jelas -->
+        <div class="daily-sales-summary">
+            <h3>TOTAL PENJUALAN HARIAN SAAT INI</h3>
+            <div id="totalPenjualanHeader">Rp 0</div>
+        </div>
+
         <div class="form-group">
             <label>Pilih Saluran Pembayaran</label>
             <select id="metodeBayar">
@@ -261,7 +296,7 @@
         </div>
 
         <label>Pilih Menu:</label>
-        <div id="posMenuContainer" style="max-height: 250px; overflow-y: auto; margin-bottom: 15px;">
+        <div id="posMenuContainer" style="max-height: 220px; overflow-y: auto; margin-bottom: 15px;">
             <!-- Muncul otomatis dikelompokkan berdasarkan kategori -->
         </div>
 
@@ -272,9 +307,9 @@
         </div>
         <button class="btn btn-success" onclick="simpanTransaksi()">Catat & Masukkan Transaksi</button>
         
-        <!-- PANEL RIWAYAT INPUT KASIR (SOLUSI MASALAH 1) -->
+        <!-- PANEL RIWAYAT TRANSAKSI & FITUR HAPUS -->
         <div class="history-box">
-            <label style="font-weight: bold; color: var(--accent-color); margin-bottom: 5px;">Riwayat Input Kasir Hari Ini:</label>
+            <label style="font-weight: bold; color: var(--accent-color); margin-bottom: 5px;">Riwayat Transaksi Hari Ini (Bisa Dihapus):</label>
             <div id="listRiwayatKasir"><span style="color:var(--muted-text); font-size:0.85rem;">Belum ada transaksi diinput.</span></div>
         </div>
     </div>
@@ -288,11 +323,11 @@
         </div>
         <div class="form-group">
             <label>Open Uang Outlet (Modal / Uang Kecil)</label>
-            <input type="number" id="openUang" value="313000" oninput="updateAll()">
+            <input type="text" id="openUang" value="313.000" oninput="formatInputRupiah(this); updateAll()">
         </div>
         <div class="form-group">
             <label>Total Belanja / Pengeluaran (Rp)</label>
-            <input type="number" id="pengeluaranTotal" value="20000" oninput="updateAll()">
+            <input type="text" id="pengeluaranTotal" value="20.000" oninput="formatInputRupiah(this); updateAll()">
         </div>
         <div class="form-group">
             <label>Rincian Pengeluaran</label>
@@ -315,7 +350,8 @@
 <script>
     document.getElementById('tanggal').valueAsDate = new Date();
 
-    // 1. Data Master Menu dengan Kategori
+    // 1. Data Kategori & Master Menu
+    let listKategori = ["Terbul", "Martabak", "Paket"];
     let masterMenu = [
         { id: 1, kategori: "Terbul", nama: "Terbul Coklat", harga: 15000 },
         { id: 2, kategori: "Terbul", nama: "Terbul Keju", harga: 18000 },
@@ -333,11 +369,12 @@
         qris: { total: 113000, rincian: ["• Martabak Istimewa (1)", "• Terbul CocoCrancy (1)", "• Terbul Keju (1)", "• Paket 1 (1)"] }
     };
 
-    // Log riwayat transaksi lokal kasir hari ini
+    // Log riwayat transaksi lokal kasir dengan penomoran Pelanggan otomatis
     let riwayatTransaksiLog = [
-        { metode: "Cash", rincian: "Terbul Coklat (1), Terbul Keju (1)", total: 36000 },
-        { metode: "Qris", rincian: "Martabak Istimewa (1), Terbul CocoCrancy (1), Terbul Keju (1), Paket 1 (1)", total: 113000 }
+        { id: 1, pelanggan: "Pelanggan 1", metode: "Cash", rincian: "Terbul Coklat (1), Terbul Keju (1)", total: 36000, rawItems: [{nama: "Terbul Coklat", qty: 1}, {nama: "Terbul Keju", qty: 1}], metodeKey: "cash" },
+        { id: 2, pelanggan: "Pelanggan 2", metode: "Qris", rincian: "Martabak Istimewa (1), Terbul CocoCrancy (1), Terbul Keju (1), Paket 1 (1)", total: 113000, rawItems: [{nama: "Martabak Istimewa", qty: 1}, {nama: "Terbul CocoCrancy", qty: 1}, {nama: "Terbul Keju", qty: 1}, {nama: "Paket 1", qty: 1}], metodeKey: "qris" }
     ];
+    let counterPelanggan = 2;
 
     let activeCart = [];
 
@@ -356,6 +393,16 @@
         return new Intl.NumberFormat('id-ID').format(angka);
     }
 
+    function parseRupiah(str) {
+        if (!str) return 0;
+        return parseFloat(str.toString().replace(/[^0-9]/g, '')) || 0;
+    }
+
+    function formatInputRupiah(input) {
+        let angka = parseRupiah(input.value);
+        input.value = angka > 0 ? formatRupiah(angka) : '';
+    }
+
     function formatTanggalIndo(dateString) {
         if (!dateString) return '';
         const parts = dateString.split('-');
@@ -363,15 +410,36 @@
         return `${parseInt(parts[2], 10)} ${namaBulan[parseInt(parts[1], 10) - 1]} ${parts[0]}`;
     }
 
+    // Kelola Kategori
+    function tambahKategori() {
+        const katBaru = document.getElementById('inputKategoriBaru').value.trim();
+        if (!katBaru) { alert('Nama kategori tidak boleh kosong!'); return; }
+        if (listKategori.includes(katBaru)) { alert('Kategori sudah ada!'); return; }
+        
+        listKategori.push(katBaru);
+        document.getElementById('inputKategoriBaru').value = '';
+        renderDropdownKategori();
+        renderMasterMenu();
+        renderPOSGrid();
+    }
+
+    function renderDropdownKategori() {
+        let select = document.getElementById('mKategoriSelect');
+        select.innerHTML = '';
+        listKategori.forEach(k => {
+            select.innerHTML += `<option value="${k}">${k}</option>`;
+        });
+    }
+
     // Master Menu Functions
     function tambahMasterMenu() {
-        const kategori = document.getElementById('mKategori').value.trim() || "Umum";
+        const kategori = document.getElementById('mKategoriSelect').value;
         const nama = document.getElementById('mNama').value.trim();
-        const harga = parseFloat(document.getElementById('mHarga').value) || 0;
+        const harga = parseRupiah(document.getElementById('mHarga').value);
+        
         if (!nama || harga <= 0) { alert('Nama dan harga harus diisi dengan benar!'); return; }
         
         masterMenu.push({ id: Date.now(), kategori, nama, harga });
-        document.getElementById('mKategori').value = '';
         document.getElementById('mNama').value = '';
         document.getElementById('mHarga').value = '';
         renderMasterMenu();
@@ -388,16 +456,12 @@
         let container = document.getElementById('listMasterMenu');
         container.innerHTML = '';
         
-        // Kelompokkan berdasarkan kategori
-        let grouped = {};
-        masterMenu.forEach(m => {
-            if (!grouped[m.kategori]) grouped[m.kategori] = [];
-            grouped[m.kategori].push(m);
-        });
+        listKategori.forEach(kat => {
+            let items = masterMenu.filter(m => m.kategori === kat);
+            if (items.length === 0) return;
 
-        for (let kat in grouped) {
             let htmlItems = '';
-            grouped[kat].forEach(m => {
+            items.forEach(m => {
                 htmlItems += `
                     <div style="background:#0f172a; border:1px solid var(--border-color); padding:8px; border-radius:6px; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center;">
                         <div><b>${m.nama}</b><br><span style="font-size:0.8rem; color:var(--accent-color);">Rp ${formatRupiah(m.harga)}</span></div>
@@ -411,23 +475,20 @@
                     ${htmlItems}
                 </div>
             `;
-        }
+        });
     }
 
-    // POS & Cart Functions Berdasarkan Kategori
+    // POS & Cart Functions
     function renderPOSGrid() {
         let container = document.getElementById('posMenuContainer');
         container.innerHTML = '';
 
-        let grouped = {};
-        masterMenu.forEach(m => {
-            if (!grouped[m.kategori]) grouped[m.kategori] = [];
-            grouped[m.kategori].push(m);
-        });
+        listKategori.forEach(kat => {
+            let items = masterMenu.filter(m => m.kategori === kat);
+            if (items.length === 0) return;
 
-        for (let kat in grouped) {
             let gridCards = '';
-            grouped[kat].forEach(m => {
+            items.forEach(m => {
                 gridCards += `
                     <div class="pos-item-card" onclick="addToCart(${m.id})">
                         <h4>${m.nama}</h4>
@@ -443,7 +504,7 @@
                     </div>
                 </div>
             `;
-        }
+        });
     }
 
     function addToCart(id) {
@@ -482,26 +543,56 @@
         let metodeKey = metodeSelect.value;
         let metodeText = metodeSelect.options[metodeSelect.selectedIndex].text;
         
+        counterPelanggan++;
+        let namaPelanggan = `Pelanggan ${counterPelanggan}`;
         let totalTransaksi = activeCart.reduce((sum, item) => sum + (item.harga * item.qty), 0);
         let itemRincianArr = activeCart.map(item => `${item.nama} (${item.qty})`);
 
         // Masukkan ke data akumulasi laporan
         dataPenjualan[metodeKey].total += totalTransaksi;
-        itemRincianArr.forEach(r => {
-            dataPenjualan[metodeKey].rincian.push(`• ${r}`);
+        activeCart.forEach(item => {
+            dataPenjualan[metodeKey].rincian.push(`• ${item.nama} (${item.qty})`);
         });
 
-        // Masukkan ke log riwayat kasir lokal
+        // Masukkan ke log riwayat kasir
         riwayatTransaksiLog.push({
+            id: Date.now(),
+            pelanggan: namaPelanggan,
             metode: metodeText,
             rincian: itemRincianArr.join(', '),
-            total: totalTransaksi
+            total: totalTransaksi,
+            rawItems: JSON.parse(JSON.stringify(activeCart)),
+            metodeKey: metodeKey
         });
 
         activeCart = [];
         renderCart();
         renderRiwayatKasir();
+        updateAll();
         alert('Transaksi berhasil dicatat!');
+    }
+
+    function hapusTransaksiKasir(idLog) {
+        let index = riwayatTransaksiLog.findIndex(l => l.id === idLog);
+        if (index === -1) return;
+
+        if (!confirm(`Hapus transaksi ${riwayatTransaksiLog[index].pelanggan}?`)) return;
+
+        let log = riwayatTransaksiLog[index];
+        
+        // Kurangi dari data akumulasi
+        dataPenjualan[log.metodeKey].total -= log.total;
+        log.rawItems.forEach(item => {
+            let strTarget = `• ${item.nama} (${item.qty})`;
+            let idxRincian = dataPenjualan[log.metodeKey].rincian.indexOf(strTarget);
+            if (idxRincian > -1) {
+                dataPenjualan[log.metodeKey].rincian.splice(idxRincian, 1);
+            }
+        });
+
+        // Hapus dari log riwayat
+        riwayatTransaksiLog.splice(index, 1);
+        renderRiwayatKasir();
         updateAll();
     }
 
@@ -515,8 +606,11 @@
         riwayatTransaksiLog.slice().reverse().forEach(log => {
             container.innerHTML += `
                 <div class="history-item">
-                    <b>[${log.metode}]</b> - Rp ${formatRupiah(log.total)}<br>
-                    <span style="color: var(--muted-text);">${log.rincian}</span>
+                    <div>
+                        <b>${log.pelanggan}</b> <span style="color:var(--accent-color);">[${log.metode}]</span> - Rp ${formatRupiah(log.total)}<br>
+                        <span style="color: var(--muted-text);">${log.rincian}</span>
+                    </div>
+                    <button class="btn btn-danger" style="width:auto; padding:3px 8px; margin:0; font-size:0.75rem;" onclick="hapusTransaksiKasir(${log.id})">Hapus</button>
                 </div>
             `;
         });
@@ -535,8 +629,11 @@
 
         const totalSemuaPenjualan = dataPenjualan.grab.total + dataPenjualan.shopee.total + dataPenjualan.gofood.total + dataPenjualan.cash.total + dataPenjualan.qris.total;
         
-        const openUang = parseFloat(document.getElementById('openUang').value) || 0;
-        const pengeluaranTotal = parseFloat(document.getElementById('pengeluaranTotal').value) || 0;
+        // Update total penjualan harian di tab kasir secara real-time
+        document.getElementById('totalPenjualanHeader').innerText = `Rp ${formatRupiah(totalSemuaPenjualan)}`;
+
+        const openUang = parseRupiah(document.getElementById('openUang').value);
+        const pengeluaranTotal = parseRupiah(document.getElementById('pengeluaranTotal').value);
         const pengeluaranDetail = document.getElementById('pengeluaranDetail').value;
         const closeUang = (totalSemuaPenjualan + openUang) - pengeluaranTotal;
 
@@ -582,6 +679,7 @@
     }
 
     // Inisialisasi awal
+    renderDropdownKategori();
     renderMasterMenu();
     renderPOSGrid();
     renderRiwayatKasir();

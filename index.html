@@ -332,7 +332,7 @@
         <h3>Input Transaksi Penjualan Harian</h3>
         
         <div class="daily-sales-summary">
-            <h3>TOTAL PENJUALAN HARIAN SAAT INI</h3>
+            <h3>TOTAL PENJUALAN OFFLINE SAAT INI</h3>
             <div id="totalPenjualanHeader">Rp 0</div>
         </div>
 
@@ -513,9 +513,7 @@
     function hapusKategori(namaKat) {
         if (!confirm(`Hapus kategori "${namaKat}" beserta seluruh menu di dalamnya?`)) return;
         
-        // Hapus menu yang ada di kategori tersebut
         masterMenu = masterMenu.filter(m => m.kategori !== namaKat);
-        // Hapus kategori dari list
         listKategori = listKategori.filter(k => k !== namaKat);
 
         renderDropdownKategori();
@@ -712,7 +710,6 @@
             return;
         }
         container.innerHTML = '';
-        // Urutan dari bawah ke atas, nomor pelanggan otomatis berurutan dari 1 berdasarkan indeks asli array
         riwayatTransaksiLog.forEach((log, idx) => {
             let nomorPelanggan = idx + 1;
             container.innerHTML += `
@@ -783,16 +780,17 @@
         const cashTot = formatRupiah(dataPenjualan.cash.total);
         const qrisTot = formatRupiah(dataPenjualan.qris.total);
 
-        const totalSemuaPenjualan = dataPenjualan.grab.total + dataPenjualan.shopee.total + dataPenjualan.gofood.total + dataPenjualan.cash.total + dataPenjualan.qris.total;
-        
-        document.getElementById('totalPenjualanHeader').innerText = `Rp ${formatRupiah(totalSemuaPenjualan)}`;
+        // Penjualan offline (Cash + Qris) untuk header indikator kasir
+        const totalOffline = dataPenjualan.cash.total + dataPenjualan.qris.total;
+        document.getElementById('totalPenjualanHeader').innerText = `Rp ${formatRupiah(totalOffline)}`;
 
         const openUang = parseRupiah(document.getElementById('openUang').value);
         
         let totalPengeluaran = listPengeluaranData.reduce((sum, p) => sum + p.total, 0);
         let pengeluaranDetailStr = listPengeluaranData.map(p => `• ${p.item} harga Rp${formatRupiah(p.harga)} (${p.qty}) = Rp${formatRupiah(p.total)}`).join('\n');
 
-        const closeUang = (totalSemuaPenjualan + openUang) - totalPengeluaran;
+        // Close Uang Outlet: (Penjualan Cash + Open Uang Outlet) - Total Pengeluaran
+        const closeUang = (dataPenjualan.cash.total + openUang) - totalPengeluaran;
 
         document.getElementById('highlightCloseUang').innerText = `Rp ${formatRupiah(closeUang)}`;
 
@@ -806,8 +804,7 @@
                    `Gofood: ${gofoodTot}\n-\n\n` +
                    `OFFLINE\n` +
                    `Cash: ${cashTot}\n${cashDetStr}\n` +
-                   `Qris: ${qrisTot}\n${qrisDetStr}\n` +
-                   `TOTAL Penjualan : ${formatRupiah(totalSemuaPenjualan)}\n\n` +
+                   `Qris: ${qrisTot}\n${qrisDetStr}\n\n` +
                    `Open Uang Outlet : ${formatRupiah(openUang)}\n` +
                    `Pengeluaran : ${formatRupiah(totalPengeluaran)}\n${pengeluaranDetailStr}\n` +
                    `Close Uang Outlet : ${formatRupiah(closeUang)}`;

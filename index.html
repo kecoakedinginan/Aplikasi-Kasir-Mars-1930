@@ -195,16 +195,38 @@
             padding-bottom: 5px;
         }
 
-        .daily-sales-summary {
-            background: #131c31;
-            border: 1px solid var(--accent-color);
-            padding: 12px;
-            border-radius: 8px;
+        /* Summary Grid Tab 2 */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
             margin-bottom: 15px;
+        }
+        .summary-card {
+            background: #131c31;
+            border: 1px solid var(--border-color);
+            padding: 10px 6px;
+            border-radius: 8px;
             text-align: center;
         }
-        .daily-sales-summary h3 { margin: 0 0 5px 0; font-size: 0.9rem; color: var(--muted-text); }
-        .daily-sales-summary div { font-size: 1.3rem; font-weight: bold; color: var(--success-color); }
+        .summary-card.highlight {
+            border-color: var(--accent-color);
+            background: #182844;
+        }
+        .summary-card h3 { 
+            margin: 0 0 4px 0; 
+            font-size: 0.72rem; 
+            color: var(--muted-text); 
+            text-transform: uppercase;
+        }
+        .summary-card div { 
+            font-size: 1rem; 
+            font-weight: bold; 
+            color: var(--success-color); 
+        }
+        .summary-card.highlight div {
+            color: var(--accent-color);
+        }
 
         .history-box {
             background: #0f172a;
@@ -331,9 +353,19 @@
     <div id="tab-kasir" class="tab-content">
         <h3>Input Transaksi Penjualan Harian</h3>
         
-        <div class="daily-sales-summary">
-            <h3>TOTAL PENJUALAN OFFLINE SAAT INI</h3>
-            <div id="totalPenjualanHeader">Rp 0</div>
+        <div class="summary-grid">
+            <div class="summary-card">
+                <h3>Offline</h3>
+                <div id="totalOfflineHeader">Rp 0</div>
+            </div>
+            <div class="summary-card">
+                <h3>Online</h3>
+                <div id="totalOnlineHeader">Rp 0</div>
+            </div>
+            <div class="summary-card highlight">
+                <h3>Total Keseluruhan</h3>
+                <div id="totalSemuaHeader">Rp 0</div>
+            </div>
         </div>
 
         <div class="form-group">
@@ -780,9 +812,15 @@
         const cashTot = formatRupiah(dataPenjualan.cash.total);
         const qrisTot = formatRupiah(dataPenjualan.qris.total);
 
-        // Penjualan offline (Cash + Qris) untuk header indikator kasir
+        // Kalkulasi Total Kategori
         const totalOffline = dataPenjualan.cash.total + dataPenjualan.qris.total;
-        document.getElementById('totalPenjualanHeader').innerText = `Rp ${formatRupiah(totalOffline)}`;
+        const totalOnline = dataPenjualan.grab.total + dataPenjualan.shopee.total + dataPenjualan.gofood.total;
+        const totalSemua = totalOffline + totalOnline;
+
+        // Update tampilan header Tab 2
+        document.getElementById('totalOfflineHeader').innerText = `Rp ${formatRupiah(totalOffline)}`;
+        document.getElementById('totalOnlineHeader').innerText = `Rp ${formatRupiah(totalOnline)}`;
+        document.getElementById('totalSemuaHeader').innerText = `Rp ${formatRupiah(totalSemua)}`;
 
         const openUang = parseRupiah(document.getElementById('openUang').value);
         

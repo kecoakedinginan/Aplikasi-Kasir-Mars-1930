@@ -120,25 +120,39 @@
         .btn-danger { background-color: var(--danger-color); color: white; }
         .btn-success { background-color: var(--success-color); color: #0f172a; }
 
-        /* POS Grid Menu */
+        /* Kategori & POS Grid */
+        .category-group {
+            margin-bottom: 15px;
+            background: #131c31;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+        .category-title {
+            font-weight: bold;
+            color: var(--accent-color);
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+            border-bottom: 1px dashed var(--border-color);
+            padding-bottom: 4px;
+        }
         .pos-menu-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin-bottom: 15px;
+            gap: 8px;
         }
         .pos-item-card {
             background: #0f172a;
             border: 1px solid var(--border-color);
-            padding: 12px;
-            border-radius: 8px;
+            padding: 10px;
+            border-radius: 6px;
             cursor: pointer;
             text-align: center;
             transition: 0.2s;
         }
-        .pos-item-card:hover { border-color: var(--accent-color); }
-        .pos-item-card h4 { margin: 0 0 5px 0; font-size: 1rem; }
-        .pos-item-card p { margin: 0; font-size: 0.85rem; color: var(--accent-color); }
+        .pos-item-card:hover { border-color: var(--accent-color); background: #182238; }
+        .pos-item-card h4 { margin: 0 0 3px 0; font-size: 0.95rem; }
+        .pos-item-card p { margin: 0; font-size: 0.8rem; color: var(--accent-color); }
 
         /* Keranjang Transaksi */
         .cart-box {
@@ -156,6 +170,23 @@
             margin-bottom: 8px;
             border-bottom: 1px dashed var(--border-color);
             padding-bottom: 5px;
+        }
+
+        /* Riwayat Transaksi Kasir */
+        .history-box {
+            background: #0f172a;
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .history-item {
+            font-size: 0.85rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 6px;
+            margin-bottom: 6px;
         }
 
         /* Preview Teks Laporan */
@@ -192,10 +223,13 @@
         <button class="tab-btn" onclick="switchTab(event, 'tab-laporan')">4. Export Laporan</button>
     </div>
 
-    <!-- TAB 1: MASTER MENU (Harga Tetap) -->
+    <!-- TAB 1: MASTER MENU DENGAN KATEGORI -->
     <div id="tab-master" class="tab-content active">
-        <h3>Kelola Daftar Menu & Harga Tetap</h3>
-        <p style="font-size: 0.85rem; color: var(--muted-text);">Menu yang didaftarkan di sini akan menjadi acuan kasir setiap hari.</p>
+        <h3>Kelola Daftar Menu & Kategori</h3>
+        <div class="form-group">
+            <label>Kategori Menu (Contoh: Terbul, Martabak Asin, Minuman)</label>
+            <input type="text" id="mKategori" placeholder="Contoh: Terbul">
+        </div>
         <div class="form-group">
             <label>Nama Menu</label>
             <input type="text" id="mNama" placeholder="Contoh: Terbul Coklat">
@@ -207,7 +241,7 @@
         <button class="btn" onclick="tambahMasterMenu()">Simpan Menu Baru</button>
 
         <div style="margin-top: 20px;">
-            <label>Daftar Menu Aktif:</label>
+            <label>Daftar Menu Berdasarkan Kategori:</label>
             <div id="listMasterMenu"></div>
         </div>
     </div>
@@ -217,7 +251,7 @@
         <h3>Input Transaksi Penjualan Harian</h3>
         <div class="form-group">
             <label>Pilih Saluran Pembayaran</label>
-            <select id="metodeBayar" onchange="updateChannelInput()">
+            <select id="metodeBayar">
                 <option value="cash">Cash (Tunai)</option>
                 <option value="qris">QRIS</option>
                 <option value="grab">Grab</option>
@@ -226,9 +260,9 @@
             </select>
         </div>
 
-        <label>Klik Menu untuk Masuk ke Transaksi:</label>
-        <div class="pos-menu-grid" id="posMenuGrid">
-            <!-- Muncul otomatis dari Master Menu -->
+        <label>Pilih Menu:</label>
+        <div id="posMenuContainer" style="max-height: 250px; overflow-y: auto; margin-bottom: 15px;">
+            <!-- Muncul otomatis dikelompokkan berdasarkan kategori -->
         </div>
 
         <div class="cart-box">
@@ -238,9 +272,10 @@
         </div>
         <button class="btn btn-success" onclick="simpanTransaksi()">Catat & Masukkan Transaksi</button>
         
-        <div style="margin-top: 20px;">
-            <label>Riwayat Transaksi Masuk Hari Ini:</label>
-            <div id="listRiwayatTransaksi" style="font-size: 0.85rem; color: var(--muted-text);">Belum ada transaksi.</div>
+        <!-- PANEL RIWAYAT INPUT KASIR (SOLUSI MASALAH 1) -->
+        <div class="history-box">
+            <label style="font-weight: bold; color: var(--accent-color); margin-bottom: 5px;">Riwayat Input Kasir Hari Ini:</label>
+            <div id="listRiwayatKasir"><span style="color:var(--muted-text); font-size:0.85rem;">Belum ada transaksi diinput.</span></div>
         </div>
     </div>
 
@@ -280,13 +315,13 @@
 <script>
     document.getElementById('tanggal').valueAsDate = new Date();
 
-    // 1. Data Master Menu (Permanen)
+    // 1. Data Master Menu dengan Kategori
     let masterMenu = [
-        { id: 1, nama: "Terbul Coklat", harga: 15000 },
-        { id: 2, nama: "Terbul Keju", harga: 18000 },
-        { id: 3, nama: "Martabak Istimewa", harga: 35000 },
-        { id: 4, nama: "Terbul CocoCrancy", harga: 20000 },
-        { id: 5, nama: "Paket 1", harga: 25000 }
+        { id: 1, kategori: "Terbul", nama: "Terbul Coklat", harga: 15000 },
+        { id: 2, kategori: "Terbul", nama: "Terbul Keju", harga: 18000 },
+        { id: 3, kategori: "Terbul", nama: "Terbul CocoCrancy", harga: 20000 },
+        { id: 4, kategori: "Martabak", nama: "Martabak Istimewa", harga: 35000 },
+        { id: 5, kategori: "Paket", nama: "Paket 1", harga: 25000 }
     ];
 
     // 2. Data Akumulasi Penjualan Harian per Channel
@@ -297,6 +332,12 @@
         cash: { total: 36000, rincian: ["• Terbul Coklat (1)", "• Terbul Keju (1)"] },
         qris: { total: 113000, rincian: ["• Martabak Istimewa (1)", "• Terbul CocoCrancy (1)", "• Terbul Keju (1)", "• Paket 1 (1)"] }
     };
+
+    // Log riwayat transaksi lokal kasir hari ini
+    let riwayatTransaksiLog = [
+        { metode: "Cash", rincian: "Terbul Coklat (1), Terbul Keju (1)", total: 36000 },
+        { metode: "Qris", rincian: "Martabak Istimewa (1), Terbul CocoCrancy (1), Terbul Keju (1), Paket 1 (1)", total: 113000 }
+    ];
 
     let activeCart = [];
 
@@ -324,11 +365,13 @@
 
     // Master Menu Functions
     function tambahMasterMenu() {
-        const nama = document.getElementById('mNama').value;
+        const kategori = document.getElementById('mKategori').value.trim() || "Umum";
+        const nama = document.getElementById('mNama').value.trim();
         const harga = parseFloat(document.getElementById('mHarga').value) || 0;
         if (!nama || harga <= 0) { alert('Nama dan harga harus diisi dengan benar!'); return; }
         
-        masterMenu.push({ id: Date.now(), nama, harga });
+        masterMenu.push({ id: Date.now(), kategori, nama, harga });
+        document.getElementById('mKategori').value = '';
         document.getElementById('mNama').value = '';
         document.getElementById('mHarga').value = '';
         renderMasterMenu();
@@ -344,28 +387,63 @@
     function renderMasterMenu() {
         let container = document.getElementById('listMasterMenu');
         container.innerHTML = '';
+        
+        // Kelompokkan berdasarkan kategori
+        let grouped = {};
         masterMenu.forEach(m => {
+            if (!grouped[m.kategori]) grouped[m.kategori] = [];
+            grouped[m.kategori].push(m);
+        });
+
+        for (let kat in grouped) {
+            let htmlItems = '';
+            grouped[kat].forEach(m => {
+                htmlItems += `
+                    <div style="background:#0f172a; border:1px solid var(--border-color); padding:8px; border-radius:6px; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center;">
+                        <div><b>${m.nama}</b><br><span style="font-size:0.8rem; color:var(--accent-color);">Rp ${formatRupiah(m.harga)}</span></div>
+                        <button class="btn btn-danger" style="width:auto; padding:4px 8px; margin:0; font-size:0.8rem;" onclick="hapusMasterMenu(${m.id})">Hapus</button>
+                    </div>
+                `;
+            });
             container.innerHTML += `
-                <div style="background:#0f172a; border:1px solid var(--border-color); padding:10px; border-radius:8px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
-                    <div><b>${m.nama}</b><br><span style="font-size:0.85rem; color:var(--accent-color);">Rp ${formatRupiah(m.harga)}</span></div>
-                    <button class="btn btn-danger" style="width:auto; padding:5px 10px; margin:0;" onclick="hapusMasterMenu(${m.id})">Hapus</button>
+                <div class="category-group">
+                    <div class="category-title">📂 ${kat}</div>
+                    ${htmlItems}
                 </div>
             `;
-        });
+        }
     }
 
-    // POS & Cart Functions
+    // POS & Cart Functions Berdasarkan Kategori
     function renderPOSGrid() {
-        let grid = document.getElementById('posMenuGrid');
-        grid.innerHTML = '';
+        let container = document.getElementById('posMenuContainer');
+        container.innerHTML = '';
+
+        let grouped = {};
         masterMenu.forEach(m => {
-            grid.innerHTML += `
-                <div class="pos-item-card" onclick="addToCart(${m.id})">
-                    <h4>${m.nama}</h4>
-                    <p>Rp ${formatRupiah(m.harga)}</p>
+            if (!grouped[m.kategori]) grouped[m.kategori] = [];
+            grouped[m.kategori].push(m);
+        });
+
+        for (let kat in grouped) {
+            let gridCards = '';
+            grouped[kat].forEach(m => {
+                gridCards += `
+                    <div class="pos-item-card" onclick="addToCart(${m.id})">
+                        <h4>${m.nama}</h4>
+                        <p>Rp ${formatRupiah(m.harga)}</p>
+                    </div>
+                `;
+            });
+            container.innerHTML += `
+                <div class="category-group">
+                    <div class="category-title">📂 ${kat}</div>
+                    <div class="pos-menu-grid">
+                        ${gridCards}
+                    </div>
                 </div>
             `;
-        });
+        }
     }
 
     function addToCart(id) {
@@ -400,18 +478,48 @@
 
     function simpanTransaksi() {
         if (activeCart.length === 0) { alert('Keranjang masih kosong!'); return; }
-        let metode = document.getElementById('metodeBayar').value;
+        let metodeSelect = document.getElementById('metodeBayar');
+        let metodeKey = metodeSelect.value;
+        let metodeText = metodeSelect.options[metodeSelect.selectedIndex].text;
+        
         let totalTransaksi = activeCart.reduce((sum, item) => sum + (item.harga * item.qty), 0);
+        let itemRincianArr = activeCart.map(item => `${item.nama} (${item.qty})`);
 
-        dataPenjualan[metode].total += totalTransaksi;
-        activeCart.forEach(item => {
-            dataPenjualan[metode].rincian.push(`• ${item.nama} (${item.qty})`);
+        // Masukkan ke data akumulasi laporan
+        dataPenjualan[metodeKey].total += totalTransaksi;
+        itemRincianArr.forEach(r => {
+            dataPenjualan[metodeKey].rincian.push(`• ${r}`);
+        });
+
+        // Masukkan ke log riwayat kasir lokal
+        riwayatTransaksiLog.push({
+            metode: metodeText,
+            rincian: itemRincianArr.join(', '),
+            total: totalTransaksi
         });
 
         activeCart = [];
         renderCart();
-        alert('Transaksi berhasil disimpan ke laporan harian!');
+        renderRiwayatKasir();
+        alert('Transaksi berhasil dicatat!');
         updateAll();
+    }
+
+    function renderRiwayatKasir() {
+        let container = document.getElementById('listRiwayatKasir');
+        if (riwayatTransaksiLog.length === 0) {
+            container.innerHTML = '<span style="color:var(--muted-text); font-size:0.85rem;">Belum ada transaksi diinput.</span>';
+            return;
+        }
+        container.innerHTML = '';
+        riwayatTransaksiLog.slice().reverse().forEach(log => {
+            container.innerHTML += `
+                <div class="history-item">
+                    <b>[${log.metode}]</b> - Rp ${formatRupiah(log.total)}<br>
+                    <span style="color: var(--muted-text);">${log.rincian}</span>
+                </div>
+            `;
+        });
     }
 
     // Generate Format Text Laporan Chat
@@ -476,6 +584,7 @@
     // Inisialisasi awal
     renderMasterMenu();
     renderPOSGrid();
+    renderRiwayatKasir();
     updateAll();
 </script>
 

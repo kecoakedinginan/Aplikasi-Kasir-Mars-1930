@@ -16,6 +16,7 @@
             --danger-color: #f43f5e;
             --success-color: #22c55e;
             --warning-color: #f59e0b;
+            --kol-color: #a855f7;
         }
 
         body {
@@ -213,6 +214,10 @@
             border-color: var(--accent-color);
             background: #182844;
         }
+        .summary-card.kol-card {
+            border-color: var(--kol-color);
+            background: #201335;
+        }
         .summary-card h3 { 
             margin: 0 0 4px 0; 
             font-size: 0.72rem; 
@@ -226,6 +231,10 @@
         }
         .summary-card.highlight div {
             color: var(--accent-color);
+        }
+        .summary-card.kol-card div {
+            color: #d8b4fe;
+            font-size: 0.85rem;
         }
 
         .history-box {
@@ -367,10 +376,17 @@
                 <div id="totalSemuaHeader">Rp 0</div>
             </div>
         </div>
+        <div class="summary-grid" style="grid-template-columns: 1fr; margin-bottom: 15px;">
+            <div class="summary-card kol-card">
+                <h3>Total KOL (Produk Keluar Non-Jualan)</h3>
+                <div id="totalKolHeader">0 Item</div>
+            </div>
+        </div>
 
         <div class="form-group">
-            <label>Pilih Saluran Pembayaran</label>
+            <label>Pilih Saluran Pembayaran / Jenis Catat</label>
             <select id="metodeBayar">
+                <option value="kol">KOL (Produk Keluar Non-Jualan)</option>
                 <option value="cash">Cash (Tunai)</option>
                 <option value="qris">QRIS</option>
                 <option value="grab">Grab</option>
@@ -479,6 +495,7 @@
     ];
 
     let dataPenjualan = {
+        kol: { rincian: [] },
         grab: { total: 0, rincian: [] },
         shopee: { total: 0, rincian: [] },
         gofood: { total: 0, rincian: [] },
@@ -696,16 +713,22 @@
         let totalTransaksi = activeCart.reduce((sum, item) => sum + (item.harga * item.qty), 0);
         let itemRincianArr = activeCart.map(item => `${item.nama} (${item.qty})`);
 
-        dataPenjualan[metodeKey].total += totalTransaksi;
-        activeCart.forEach(item => {
-            dataPenjualan[metodeKey].rincian.push(`• ${item.nama} (${item.qty})`);
-        });
+        if (metodeKey === 'kol') {
+            activeCart.forEach(item => {
+                dataPenjualan.kol.rincian.push(`• ${item.nama} (${item.qty})`);
+            });
+        } else {
+            dataPenjualan[metodeKey].total += totalTransaksi;
+            activeCart.forEach(item => {
+                dataPenjualan[metodeKey].rincian.push(`• ${item.nama} (${item.qty})`);
+            });
+        }
 
         riwayatTransaksiLog.push({
             id: Date.now(),
             metode: metodeText,
             rincian: itemRincianArr.join(', '),
-            total: totalTransaksi,
+            total: metodeKey === 'kol' ? 0 : totalTransaksi,
             rawItems: JSON.parse(JSON.stringify(activeCart)),
             metodeKey: metodeKey
         });
@@ -714,21 +737,31 @@
         renderCart();
         renderRiwayatKasir();
         updateAll();
-        alert('Transaksi berhasil dicatat!');
+        alert('Data berhasil dicatat!');
     }
 
     function hapusTransaksiKasir(indexLog) {
-        if (!confirm(`Hapus transaksi ini?`)) return;
+        if (!confirm(`Hapus data transaksi ini?`)) return;
 
         let log = riwayatTransaksiLog[indexLog];
-        dataPenjualan[log.metodeKey].total -= log.total;
-        log.rawItems.forEach(item => {
-            let strTarget = `• ${item.nama} (${item.qty})`;
-            let idxRincian = dataPenjualan[log.metodeKey].rincian.indexOf(strTarget);
-            if (idxRincian > -1) {
-                dataPenjualan[log.metodeKey].rincian.splice(idxRincian, 1);
-            }
-        });
+        if (log.metodeKey === 'kol') {
+            log.rawItems.forEach(item => {
+                let strTarget = `• ${item.nama} (${item.qty})`;
+                let idxRincian = dataPenjualan.kol.rincian.indexOf(strTarget);
+                if (idxRincian > -1) {
+                    dataPenjualan.kol.rincian.splice(idxRincian, 1);
+                }
+            });
+        } else {
+            dataPenjualan[log.metodeKey].total -= log.total;
+            log.rawItems.forEach(item => {
+                let strTarget = `• ${item.nama} (${item.qty})`;
+                let idxRincian = dataPenjualan[log.metodeKey].rincian.indexOf(strTarget);
+                if (idxRincian > -1) {
+                    dataPenjualan[log.metodeKey].rincian.splice(idxRincian, 1);
+                }
+            });
+        }
 
         riwayatTransaksiLog.splice(indexLog, 1);
         renderRiwayatKasir();
@@ -744,10 +777,11 @@
         container.innerHTML = '';
         riwayatTransaksiLog.forEach((log, idx) => {
             let nomorPelanggan = idx + 1;
+            let displayNominal = log.metodeKey === 'kol' ? 'Non-Jualan' : `Rp ${formatRupiah(log.total)}`;
             container.innerHTML += `
                 <div class="history-item">
                     <div>
-                        <b>Pelanggan ${nomorPelanggan}</b> <span style="color:var(--accent-color);">[${log.metode}]</span> - Rp ${formatRupiah(log.total)}<br>
+                        <b>Data ${nomorPelanggan}</b> <span style="color:var(--accent-color);">[${log.metode}]</span> - ${displayNominal}<br>
                         <span style="color: var(--muted-text);">${log.rincian}</span>
                     </div>
                     <button class="btn btn-danger" style="width:auto; padding:3px 8px; margin:0; font-size:0.75rem;" onclick="hapusTransaksiKasir(${idx})">Hapus</button>
@@ -817,10 +851,18 @@
         const totalOnline = dataPenjualan.grab.total + dataPenjualan.shopee.total + dataPenjualan.gofood.total;
         const totalSemua = totalOffline + totalOnline;
 
+        // Hitung total qty KOL
+        let totalKolQty = 0;
+        dataPenjualan.kol.rincian.forEach(r => {
+            let match = r.match(/\((\d+)\)$/);
+            if (match) totalKolQty += parseInt(match[1], 10);
+        });
+
         // Update tampilan header Tab 2
         document.getElementById('totalOfflineHeader').innerText = `Rp ${formatRupiah(totalOffline)}`;
         document.getElementById('totalOnlineHeader').innerText = `Rp ${formatRupiah(totalOnline)}`;
         document.getElementById('totalSemuaHeader').innerText = `Rp ${formatRupiah(totalSemua)}`;
+        document.getElementById('totalKolHeader').innerText = `${totalKolQty} Item`;
 
         const openUang = parseRupiah(document.getElementById('openUang').value);
         
@@ -832,20 +874,29 @@
 
         document.getElementById('highlightCloseUang').innerText = `Rp ${formatRupiah(closeUang)}`;
 
+        let kolDetStr = dataPenjualan.kol.rincian.join('\n');
         let cashDetStr = dataPenjualan.cash.rincian.join('\n');
         let qrisDetStr = dataPenjualan.qris.rincian.join('\n');
 
-        let text = `${outlet} ${formattedDate}\n` +
-                   `ONLINE\n` +
-                   `Grab : ${grabTot}\n-\n` +
-                   `Shopee : ${shopeeTot}\n• \n` +
-                   `Gofood: ${gofoodTot}\n-\n\n` +
-                   `OFFLINE\n` +
-                   `Cash: ${cashTot}\n${cashDetStr}\n` +
-                   `Qris: ${qrisTot}\n${qrisDetStr}\n\n` +
-                   `Open Uang Outlet : ${formatRupiah(openUang)}\n` +
-                   `Pengeluaran : ${formatRupiah(totalPengeluaran)}\n${pengeluaranDetailStr}\n` +
-                   `Close Uang Outlet : ${formatRupiah(closeUang)}`;
+        let text = `${outlet} ${formattedDate}\n\n`;
+
+        // Bagian KOL ditaruh di paling atas teks
+        if (dataPenjualan.kol.rincian.length > 0) {
+            text += `KOL\n${kolDetStr}\n\n`;
+        } else {
+            text += `KOL\n-\n\n`;
+        }
+
+        text += `ONLINE\n` +
+                `Grab : ${grabTot}\n-\n` +
+                `Shopee : ${shopeeTot}\n• \n` +
+                `Gofood: ${gofoodTot}\n-\n\n` +
+                `OFFLINE\n` +
+                `Cash: ${cashTot}\n${cashDetStr}\n` +
+                `Qris: ${qrisTot}\n${qrisDetStr}\n\n` +
+                `Open Uang Outlet : ${formatRupiah(openUang)}\n` +
+                `Pengeluaran : ${formatRupiah(totalPengeluaran)}\n${pengeluaranDetailStr}\n` +
+                `Close Uang Outlet : ${formatRupiah(closeUang)}`;
 
         return text;
     }

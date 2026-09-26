@@ -15,6 +15,7 @@
             --accent-hover: #0ea5e9;
             --danger-color: #f43f5e;
             --success-color: #22c55e;
+            --warning-color: #f59e0b;
         }
 
         body {
@@ -119,6 +120,7 @@
         
         .btn-danger { background-color: var(--danger-color); color: white; }
         .btn-success { background-color: var(--success-color); color: #0f172a; }
+        .btn-warning { background-color: var(--warning-color); color: #0f172a; }
 
         /* Kategori & POS Grid */
         .category-group {
@@ -128,13 +130,19 @@
             border-radius: 8px;
             border: 1px solid var(--border-color);
         }
+        .category-header-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            border-bottom: 1px dashed var(--border-color);
+            padding-bottom: 4px;
+        }
         .category-title {
             font-weight: bold;
             color: var(--accent-color);
-            margin-bottom: 8px;
             font-size: 0.95rem;
-            border-bottom: 1px dashed var(--border-color);
-            padding-bottom: 4px;
+            margin: 0;
         }
         .pos-menu-grid {
             display: grid;
@@ -154,6 +162,21 @@
         .pos-item-card h4 { margin: 0 0 3px 0; font-size: 0.95rem; }
         .pos-item-card p { margin: 0; font-size: 0.8rem; color: var(--accent-color); }
 
+        .item-menu-card {
+            background: #0f172a;
+            border: 1px solid var(--border-color);
+            padding: 8px;
+            border-radius: 6px;
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .item-menu-card.baru {
+            border-color: var(--warning-color);
+            background: #232219;
+        }
+
         /* Keranjang Transaksi */
         .cart-box {
             background: #0f172a;
@@ -172,7 +195,6 @@
             padding-bottom: 5px;
         }
 
-        /* Ringkasan Total Penjualan Harian di Tab 2 */
         .daily-sales-summary {
             background: #131c31;
             border: 1px solid var(--accent-color);
@@ -184,7 +206,6 @@
         .daily-sales-summary h3 { margin: 0 0 5px 0; font-size: 0.9rem; color: var(--muted-text); }
         .daily-sales-summary div { font-size: 1.3rem; font-weight: bold; color: var(--success-color); }
 
-        /* Riwayat Transaksi Kasir */
         .history-box {
             background: #0f172a;
             border: 1px solid var(--border-color);
@@ -204,7 +225,43 @@
             align-items: flex-start;
         }
 
-        /* Preview Teks Laporan */
+        /* Tabel Pengeluaran Matriks */
+        .table-matrix {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            margin-top: 10px;
+        }
+        .table-matrix th, .table-matrix td {
+            border: 1px solid var(--border-color);
+            padding: 6px;
+            text-align: left;
+        }
+        .table-matrix th {
+            background: #131c31;
+            color: var(--accent-color);
+        }
+
+        .highlight-final-box {
+            background: #064e3b;
+            border: 2px solid var(--success-color);
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 15px;
+            text-align: center;
+        }
+        .highlight-final-box label {
+            color: #6ee7b7;
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+        .highlight-final-box div {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ffffff;
+        }
+
         .preview-container {
             margin-top: 25px;
             background: #0f172a;
@@ -238,11 +295,10 @@
         <button class="tab-btn" onclick="switchTab(event, 'tab-laporan')">4. Export Laporan</button>
     </div>
 
-    <!-- TAB 1: MASTER MENU & KATEGORI TERPISAH -->
+    <!-- TAB 1: MASTER MENU -->
     <div id="tab-master" class="tab-content active">
         <h3>Kelola Kategori & Daftar Menu</h3>
         
-        <!-- Form Tambah Kategori -->
         <div style="background: #131c31; padding: 12px; border-radius: 8px; margin-bottom: 15px; border: 1px solid var(--border-color);">
             <label style="color: var(--accent-color); font-weight: bold;">Tambah Kategori Baru</label>
             <div style="display: flex; gap: 8px; margin-top: 5px;">
@@ -251,12 +307,9 @@
             </div>
         </div>
 
-        <!-- Form Tambah Menu dengan Dropdown Kategori -->
         <div class="form-group">
             <label>Pilih Kategori Menu</label>
-            <select id="mKategoriSelect">
-                <!-- Terisi otomatis dari list kategori -->
-            </select>
+            <select id="mKategoriSelect"></select>
         </div>
         <div class="form-group">
             <label>Nama Menu</label>
@@ -278,7 +331,6 @@
     <div id="tab-kasir" class="tab-content">
         <h3>Input Transaksi Penjualan Harian</h3>
         
-        <!-- Total Penjualan Harian Terlihat Jelas -->
         <div class="daily-sales-summary">
             <h3>TOTAL PENJUALAN HARIAN SAAT INI</h3>
             <div id="totalPenjualanHeader">Rp 0</div>
@@ -296,9 +348,7 @@
         </div>
 
         <label>Pilih Menu:</label>
-        <div id="posMenuContainer" style="max-height: 220px; overflow-y: auto; margin-bottom: 15px;">
-            <!-- Muncul otomatis dikelompokkan berdasarkan kategori -->
-        </div>
+        <div id="posMenuContainer" style="max-height: 220px; overflow-y: auto; margin-bottom: 15px;"></div>
 
         <div class="cart-box">
             <label style="font-weight: bold; margin-bottom: 5px;">Keranjang Transaksi Ini:</label>
@@ -307,9 +357,8 @@
         </div>
         <button class="btn btn-success" onclick="simpanTransaksi()">Catat & Masukkan Transaksi</button>
         
-        <!-- PANEL RIWAYAT TRANSAKSI & FITUR HAPUS -->
         <div class="history-box">
-            <label style="font-weight: bold; color: var(--accent-color); margin-bottom: 5px;">Riwayat Transaksi Hari Ini (Bisa Dihapus):</label>
+            <label style="font-weight: bold; color: var(--accent-color); margin-bottom: 5px;">Riwayat Transaksi Hari Ini:</label>
             <div id="listRiwayatKasir"><span style="color:var(--muted-text); font-size:0.85rem;">Belum ada transaksi diinput.</span></div>
         </div>
     </div>
@@ -325,19 +374,57 @@
             <label>Open Uang Outlet (Modal / Uang Kecil)</label>
             <input type="text" id="openUang" value="313.000" oninput="formatInputRupiah(this); updateAll()">
         </div>
-        <div class="form-group">
-            <label>Total Belanja / Pengeluaran (Rp)</label>
-            <input type="text" id="pengeluaranTotal" value="20.000" oninput="formatInputRupiah(this); updateAll()">
+
+        <!-- Input Pengeluaran Detail Matriks -->
+        <div style="background: #131c31; padding: 12px; border-radius: 8px; margin-bottom: 15px; border: 1px solid var(--border-color);">
+            <label style="color: var(--accent-color); font-weight: bold;">Tambah Item Pengeluaran</label>
+            <div class="form-group" style="margin-top: 8px; margin-bottom: 8px;">
+                <label>Nama Item / Keterangan</label>
+                <input type="text" id="inputItemKeluar" placeholder="Contoh: Gas / K Coa">
+            </div>
+            <div style="display: flex; gap: 8px;">
+                <div class="form-group" style="flex: 2; margin-bottom: 8px;">
+                    <label>Harga Satuan (Rp)</label>
+                    <input type="text" id="inputHargaKeluar" placeholder="22.000" oninput="formatInputRupiah(this)">
+                </div>
+                <div class="form-group" style="flex: 1; margin-bottom: 8px;">
+                    <label>Qty</label>
+                    <input type="number" id="inputQtyKeluar" value="1" min="1">
+                </div>
+            </div>
+            <button class="btn btn-warning" onclick="tambahPengeluaranMatrix()">Masukkan Pengeluaran</button>
         </div>
+
         <div class="form-group">
-            <label>Rincian Pengeluaran</label>
-            <textarea id="pengeluaranDetail" oninput="updateAll()">• 20.000 ( K Coa)</textarea>
+            <label>Matriks Pengeluaran Hari Ini:</label>
+            <div style="overflow-x: auto;">
+                <table class="table-matrix">
+                    <thead>
+                        <tr>
+                            <th>ITEM</th>
+                            <th>HARGA</th>
+                            <th>QTY</th>
+                            <th>TOTAL</th>
+                            <th>AKSI</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablePengeluaranBody">
+                        <tr><td colspan="5" style="text-align: center; color: var(--muted-text);">Belum ada pengeluaran.</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
     <!-- TAB 4: EXPORT LAPORAN -->
     <div id="tab-laporan" class="tab-content">
         <h3>Export Laporan Akumulasi Harian</h3>
+        
+        <div class="highlight-final-box">
+            <label>TOTAL UANG AKHIR (CLOSE UANG OUTLET)</label>
+            <div id="highlightCloseUang">Rp 0</div>
+        </div>
+
         <div class="preview-container">
             <label style="font-weight: bold; margin-bottom: 8px; color: var(--accent-color);">Format Chat Laporan Akhir:</label>
             <pre id="previewText">Memuat laporan...</pre>
@@ -350,17 +437,15 @@
 <script>
     document.getElementById('tanggal').valueAsDate = new Date();
 
-    // 1. Data Kategori & Master Menu
     let listKategori = ["Terbul", "Martabak", "Paket"];
     let masterMenu = [
-        { id: 1, kategori: "Terbul", nama: "Terbul Coklat", harga: 15000 },
-        { id: 2, kategori: "Terbul", nama: "Terbul Keju", harga: 18000 },
-        { id: 3, kategori: "Terbul", nama: "Terbul CocoCrancy", harga: 20000 },
-        { id: 4, kategori: "Martabak", nama: "Martabak Istimewa", harga: 35000 },
-        { id: 5, kategori: "Paket", nama: "Paket 1", harga: 25000 }
+        { id: 1, kategori: "Terbul", nama: "Terbul Coklat", harga: 15000, isNew: false },
+        { id: 2, kategori: "Terbul", nama: "Terbul Keju", harga: 18000, isNew: false },
+        { id: 3, kategori: "Terbul", nama: "Terbul CocoCrancy", harga: 20000, isNew: false },
+        { id: 4, kategori: "Martabak", nama: "Martabak Istimewa", harga: 35000, isNew: false },
+        { id: 5, kategori: "Paket", nama: "Paket 1", harga: 25000, isNew: false }
     ];
 
-    // 2. Data Akumulasi Penjualan Harian per Channel
     let dataPenjualan = {
         grab: { total: 0, rincian: [] },
         shopee: { total: 0, rincian: [] },
@@ -369,12 +454,14 @@
         qris: { total: 113000, rincian: ["• Martabak Istimewa (1)", "• Terbul CocoCrancy (1)", "• Terbul Keju (1)", "• Paket 1 (1)"] }
     };
 
-    // Log riwayat transaksi lokal kasir dengan penomoran Pelanggan otomatis
     let riwayatTransaksiLog = [
-        { id: 1, pelanggan: "Pelanggan 1", metode: "Cash", rincian: "Terbul Coklat (1), Terbul Keju (1)", total: 36000, rawItems: [{nama: "Terbul Coklat", qty: 1}, {nama: "Terbul Keju", qty: 1}], metodeKey: "cash" },
-        { id: 2, pelanggan: "Pelanggan 2", metode: "Qris", rincian: "Martabak Istimewa (1), Terbul CocoCrancy (1), Terbul Keju (1), Paket 1 (1)", total: 113000, rawItems: [{nama: "Martabak Istimewa", qty: 1}, {nama: "Terbul CocoCrancy", qty: 1}, {nama: "Terbul Keju", qty: 1}, {nama: "Paket 1", qty: 1}], metodeKey: "qris" }
+        { id: 1, metode: "Cash", rincian: "Terbul Coklat (1), Terbul Keju (1)", total: 36000, rawItems: [{nama: "Terbul Coklat", qty: 1}, {nama: "Terbul Keju", qty: 1}], metodeKey: "cash" },
+        { id: 2, metode: "Qris", rincian: "Martabak Istimewa (1), Terbul CocoCrancy (1), Terbul Keju (1), Paket 1 (1)", total: 113000, rawItems: [{nama: "Martabak Istimewa", qty: 1}, {nama: "Terbul CocoCrancy", qty: 1}, {nama: "Terbul Keju", qty: 1}, {nama: "Paket 1", qty: 1}], metodeKey: "qris" }
     ];
-    let counterPelanggan = 2;
+
+    let listPengeluaranData = [
+        { id: 1, item: "K Coa", harga: 20000, qty: 1, total: 20000 }
+    ];
 
     let activeCart = [];
 
@@ -410,7 +497,7 @@
         return `${parseInt(parts[2], 10)} ${namaBulan[parseInt(parts[1], 10) - 1]} ${parts[0]}`;
     }
 
-    // Kelola Kategori
+    // Kelola Kategori & Hapus Kategori
     function tambahKategori() {
         const katBaru = document.getElementById('inputKategoriBaru').value.trim();
         if (!katBaru) { alert('Nama kategori tidak boleh kosong!'); return; }
@@ -423,9 +510,26 @@
         renderPOSGrid();
     }
 
+    function hapusKategori(namaKat) {
+        if (!confirm(`Hapus kategori "${namaKat}" beserta seluruh menu di dalamnya?`)) return;
+        
+        // Hapus menu yang ada di kategori tersebut
+        masterMenu = masterMenu.filter(m => m.kategori !== namaKat);
+        // Hapus kategori dari list
+        listKategori = listKategori.filter(k => k !== namaKat);
+
+        renderDropdownKategori();
+        renderMasterMenu();
+        renderPOSGrid();
+    }
+
     function renderDropdownKategori() {
         let select = document.getElementById('mKategoriSelect');
         select.innerHTML = '';
+        if (listKategori.length === 0) {
+            select.innerHTML = '<option value="">(Tidak ada kategori)</option>';
+            return;
+        }
         listKategori.forEach(k => {
             select.innerHTML += `<option value="${k}">${k}</option>`;
         });
@@ -434,12 +538,13 @@
     // Master Menu Functions
     function tambahMasterMenu() {
         const kategori = document.getElementById('mKategoriSelect').value;
+        if (!kategori) { alert('Pilih atau buat kategori terlebih dahulu!'); return; }
         const nama = document.getElementById('mNama').value.trim();
         const harga = parseRupiah(document.getElementById('mHarga').value);
         
         if (!nama || harga <= 0) { alert('Nama dan harga harus diisi dengan benar!'); return; }
         
-        masterMenu.push({ id: Date.now(), kategori, nama, harga });
+        masterMenu.push({ id: Date.now(), kategori, nama, harga, isNew: true });
         document.getElementById('mNama').value = '';
         document.getElementById('mHarga').value = '';
         renderMasterMenu();
@@ -455,23 +560,36 @@
     function renderMasterMenu() {
         let container = document.getElementById('listMasterMenu');
         container.innerHTML = '';
+        if (listKategori.length === 0) {
+            container.innerHTML = '<span style="color:var(--muted-text); font-size:0.85rem;">Belum ada kategori tersedia.</span>';
+            return;
+        }
         
         listKategori.forEach(kat => {
             let items = masterMenu.filter(m => m.kategori === kat);
-            if (items.length === 0) return;
-
             let htmlItems = '';
-            items.forEach(m => {
-                htmlItems += `
-                    <div style="background:#0f172a; border:1px solid var(--border-color); padding:8px; border-radius:6px; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center;">
-                        <div><b>${m.nama}</b><br><span style="font-size:0.8rem; color:var(--accent-color);">Rp ${formatRupiah(m.harga)}</span></div>
-                        <button class="btn btn-danger" style="width:auto; padding:4px 8px; margin:0; font-size:0.8rem;" onclick="hapusMasterMenu(${m.id})">Hapus</button>
-                    </div>
-                `;
-            });
+            
+            if (items.length === 0) {
+                htmlItems = '<div style="color:var(--muted-text); font-size:0.8rem; font-style:italic;">Belum ada menu di kategori ini.</div>';
+            } else {
+                items.forEach(m => {
+                    let classBaru = m.isNew ? 'baru' : '';
+                    let badgeBaru = m.isNew ? '<span style="font-size:0.7rem; background:var(--warning-color); color:#000; padding:2px 5px; border-radius:4px; margin-left:6px; font-weight:bold;">BARU</span>' : '';
+                    htmlItems += `
+                        <div class="item-menu-card ${classBaru}">
+                            <div><b>${m.nama}</b> ${badgeBaru}<br><span style="font-size:0.8rem; color:var(--accent-color);">Rp ${formatRupiah(m.harga)}</span></div>
+                            <button class="btn btn-danger" style="width:auto; padding:4px 8px; margin:0; font-size:0.8rem;" onclick="hapusMasterMenu(${m.id})">Hapus</button>
+                        </div>
+                    `;
+                });
+            }
+
             container.innerHTML += `
                 <div class="category-group">
-                    <div class="category-title">📂 ${kat}</div>
+                    <div class="category-header-box">
+                        <span class="category-title">📂 ${kat}</span>
+                        <button class="btn btn-danger" style="width:auto; padding:2px 6px; margin:0; font-size:0.75rem;" onclick="hapusKategori('${kat}')">Hapus Kategori</button>
+                    </div>
                     ${htmlItems}
                 </div>
             `;
@@ -498,7 +616,9 @@
             });
             container.innerHTML += `
                 <div class="category-group">
-                    <div class="category-title">📂 ${kat}</div>
+                    <div class="category-header-box">
+                        <span class="category-title">📂 ${kat}</span>
+                    </div>
                     <div class="pos-menu-grid">
                         ${gridCards}
                     </div>
@@ -543,21 +663,16 @@
         let metodeKey = metodeSelect.value;
         let metodeText = metodeSelect.options[metodeSelect.selectedIndex].text;
         
-        counterPelanggan++;
-        let namaPelanggan = `Pelanggan ${counterPelanggan}`;
         let totalTransaksi = activeCart.reduce((sum, item) => sum + (item.harga * item.qty), 0);
         let itemRincianArr = activeCart.map(item => `${item.nama} (${item.qty})`);
 
-        // Masukkan ke data akumulasi laporan
         dataPenjualan[metodeKey].total += totalTransaksi;
         activeCart.forEach(item => {
             dataPenjualan[metodeKey].rincian.push(`• ${item.nama} (${item.qty})`);
         });
 
-        // Masukkan ke log riwayat kasir
         riwayatTransaksiLog.push({
             id: Date.now(),
-            pelanggan: namaPelanggan,
             metode: metodeText,
             rincian: itemRincianArr.join(', '),
             total: totalTransaksi,
@@ -572,15 +687,10 @@
         alert('Transaksi berhasil dicatat!');
     }
 
-    function hapusTransaksiKasir(idLog) {
-        let index = riwayatTransaksiLog.findIndex(l => l.id === idLog);
-        if (index === -1) return;
+    function hapusTransaksiKasir(indexLog) {
+        if (!confirm(`Hapus transaksi ini?`)) return;
 
-        if (!confirm(`Hapus transaksi ${riwayatTransaksiLog[index].pelanggan}?`)) return;
-
-        let log = riwayatTransaksiLog[index];
-        
-        // Kurangi dari data akumulasi
+        let log = riwayatTransaksiLog[indexLog];
         dataPenjualan[log.metodeKey].total -= log.total;
         log.rawItems.forEach(item => {
             let strTarget = `• ${item.nama} (${item.qty})`;
@@ -590,8 +700,7 @@
             }
         });
 
-        // Hapus dari log riwayat
-        riwayatTransaksiLog.splice(index, 1);
+        riwayatTransaksiLog.splice(indexLog, 1);
         renderRiwayatKasir();
         updateAll();
     }
@@ -603,15 +712,62 @@
             return;
         }
         container.innerHTML = '';
-        riwayatTransaksiLog.slice().reverse().forEach(log => {
+        // Urutan dari bawah ke atas, nomor pelanggan otomatis berurutan dari 1 berdasarkan indeks asli array
+        riwayatTransaksiLog.forEach((log, idx) => {
+            let nomorPelanggan = idx + 1;
             container.innerHTML += `
                 <div class="history-item">
                     <div>
-                        <b>${log.pelanggan}</b> <span style="color:var(--accent-color);">[${log.metode}]</span> - Rp ${formatRupiah(log.total)}<br>
+                        <b>Pelanggan ${nomorPelanggan}</b> <span style="color:var(--accent-color);">[${log.metode}]</span> - Rp ${formatRupiah(log.total)}<br>
                         <span style="color: var(--muted-text);">${log.rincian}</span>
                     </div>
-                    <button class="btn btn-danger" style="width:auto; padding:3px 8px; margin:0; font-size:0.75rem;" onclick="hapusTransaksiKasir(${log.id})">Hapus</button>
+                    <button class="btn btn-danger" style="width:auto; padding:3px 8px; margin:0; font-size:0.75rem;" onclick="hapusTransaksiKasir(${idx})">Hapus</button>
                 </div>
+            `;
+        });
+    }
+
+    // Kelola Pengeluaran Matrix Tab 3
+    function tambahPengeluaranMatrix() {
+        const item = document.getElementById('inputItemKeluar').value.trim();
+        const harga = parseRupiah(document.getElementById('inputHargaKeluar').value);
+        const qty = parseInt(document.getElementById('inputQtyKeluar').value) || 1;
+
+        if (!item || harga <= 0 || qty <= 0) { alert('Nama item, harga, dan qty harus diisi dengan benar!'); return; }
+
+        let total = harga * qty;
+        listPengeluaranData.push({ id: Date.now(), item, harga, qty, total });
+
+        document.getElementById('inputItemKeluar').value = '';
+        document.getElementById('inputHargaKeluar').value = '';
+        document.getElementById('inputQtyKeluar').value = '1';
+
+        renderTablePengeluaran();
+        updateAll();
+    }
+
+    function hapusPengeluaranMatrix(id) {
+        listPengeluaranData = listPengeluaranData.filter(p => p.id !== id);
+        renderTablePengeluaran();
+        updateAll();
+    }
+
+    function renderTablePengeluaran() {
+        let tbody = document.getElementById('tablePengeluaranBody');
+        if (listPengeluaranData.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--muted-text);">Belum ada pengeluaran.</td></tr>';
+            return;
+        }
+        tbody.innerHTML = '';
+        listPengeluaranData.forEach(p => {
+            tbody.innerHTML += `
+                <tr>
+                    <td>${p.item}</td>
+                    <td>Rp ${formatRupiah(p.harga)}</td>
+                    <td>${p.qty}</td>
+                    <td>Rp ${formatRupiah(p.total)}</td>
+                    <td><button class="btn btn-danger" style="width:auto; padding:2px 6px; margin:0; font-size:0.7rem;" onclick="hapusPengeluaranMatrix(${p.id})">Hapus</button></td>
+                </tr>
             `;
         });
     }
@@ -629,13 +785,16 @@
 
         const totalSemuaPenjualan = dataPenjualan.grab.total + dataPenjualan.shopee.total + dataPenjualan.gofood.total + dataPenjualan.cash.total + dataPenjualan.qris.total;
         
-        // Update total penjualan harian di tab kasir secara real-time
         document.getElementById('totalPenjualanHeader').innerText = `Rp ${formatRupiah(totalSemuaPenjualan)}`;
 
         const openUang = parseRupiah(document.getElementById('openUang').value);
-        const pengeluaranTotal = parseRupiah(document.getElementById('pengeluaranTotal').value);
-        const pengeluaranDetail = document.getElementById('pengeluaranDetail').value;
-        const closeUang = (totalSemuaPenjualan + openUang) - pengeluaranTotal;
+        
+        let totalPengeluaran = listPengeluaranData.reduce((sum, p) => sum + p.total, 0);
+        let pengeluaranDetailStr = listPengeluaranData.map(p => `• ${p.item} harga Rp${formatRupiah(p.harga)} (${p.qty}) = Rp${formatRupiah(p.total)}`).join('\n');
+
+        const closeUang = (totalSemuaPenjualan + openUang) - totalPengeluaran;
+
+        document.getElementById('highlightCloseUang').innerText = `Rp ${formatRupiah(closeUang)}`;
 
         let cashDetStr = dataPenjualan.cash.rincian.join('\n');
         let qrisDetStr = dataPenjualan.qris.rincian.join('\n');
@@ -650,7 +809,7 @@
                    `Qris: ${qrisTot}\n${qrisDetStr}\n` +
                    `TOTAL Penjualan : ${formatRupiah(totalSemuaPenjualan)}\n\n` +
                    `Open Uang Outlet : ${formatRupiah(openUang)}\n` +
-                   `Pengeluaran : ${formatRupiah(pengeluaranTotal)}\n${pengeluaranDetail}\n` +
+                   `Pengeluaran : ${formatRupiah(totalPengeluaran)}\n${pengeluaranDetailStr}\n` +
                    `Close Uang Outlet : ${formatRupiah(closeUang)}`;
 
         return text;
@@ -683,6 +842,7 @@
     renderMasterMenu();
     renderPOSGrid();
     renderRiwayatKasir();
+    renderTablePengeluaran();
     updateAll();
 </script>
 

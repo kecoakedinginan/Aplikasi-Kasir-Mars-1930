@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Loyverse POS Daily Report - Ultimate</title>
+    <title>Loyverse POS Daily Report - Ultimate Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .tab-content { display: none; }
@@ -23,8 +23,8 @@
                 </div>
             </div>
             <div class="flex items-center gap-4 text-xs bg-emerald-900/60 px-4 py-2 rounded-xl border border-emerald-800">
-                <div>📅 <span id="headerDate" class="font-medium text-emerald-200"></span></div>
-                <div>⏰ <span id="headerTime" class="font-medium text-emerald-200"></span></div>
+                <div>📅 <span id="headerDateDisplay" class="font-medium text-emerald-200"></span></div>
+                <div>🕒 Masuk: <span id="headerTimeIn" class="font-medium text-emerald-200">-</span> | Closing: <span id="headerTimeOut" class="font-medium text-emerald-200">-</span></div>
             </div>
         </div>
     </header>
@@ -36,13 +36,13 @@
         <div id="tab-home" class="tab-content active space-y-4">
             <div class="bg-emerald-900/40 border border-emerald-800/60 p-5 rounded-2xl shadow-lg backdrop-blur-md">
                 <h2 class="text-lg font-bold text-emerald-200 mb-3">Ringkasan Operasional Harian</h2>
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
                     <div class="bg-slate-800/80 p-4 rounded-2xl border border-slate-700">
                         <p class="text-xs text-slate-400">Total Penjualan</p>
                         <p id="homeTotalSales" class="text-lg font-extrabold text-emerald-400 mt-1">Rp 0</p>
                     </div>
                     <div class="bg-slate-800/80 p-4 rounded-2xl border border-slate-700">
-                        <p class="text-xs text-slate-400">Penjualan Offline / Online</p>
+                        <p class="text-xs text-slate-400">Offline / Online</p>
                         <p id="homeBreakdownSales" class="text-xs font-bold text-slate-200 mt-2">Off: Rp 0 | On: Rp 0</p>
                     </div>
                     <div class="bg-slate-800/80 p-4 rounded-2xl border border-slate-700">
@@ -54,11 +54,27 @@
                         <p id="homeCloseMoney" class="text-lg font-extrabold text-cyan-400 mt-1">Rp 0</p>
                     </div>
                 </div>
+
+                <!-- Tambahan Analisis Home: 3 Menu Terbanyak & Omset per Kanal -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div class="bg-slate-800/80 p-4 rounded-2xl border border-slate-700">
+                        <p class="text-xs font-semibold text-emerald-300 mb-2">🔥 3 Menu Terbanyak Terjual</p>
+                        <ul id="homeTopMenus" class="text-xs text-slate-300 space-y-1">
+                            <li class="text-slate-500 italic">Belum ada data penjualan.</li>
+                        </ul>
+                    </div>
+                    <div class="bg-slate-800/80 p-4 rounded-2xl border border-slate-700">
+                        <p class="text-xs font-semibold text-cyan-300 mb-2">💳 Omset Terbanyak Berdasarkan Kanal</p>
+                        <div id="homeTopChannel" class="text-xs text-slate-300 space-y-1">
+                            <p class="text-slate-500 italic">Belum ada data kanal.</p>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="bg-slate-800/60 border border-slate-700/80 p-5 rounded-2xl shadow-lg">
-                <h3 class="text-md font-semibold text-slate-200 mb-3">Informasi Shift & Outlet</h3>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                <h3 class="text-md font-semibold text-slate-200 mb-3">Informasi Shift, Tanggal & Jam Kerja</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm mb-4">
                     <div>
                         <label class="block text-xs text-slate-400 mb-1">Nama Outlet</label>
                         <input type="text" id="inputOutletName" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-200 focus:outline-none focus:border-emerald-500" value="Outlet Utama">
@@ -67,8 +83,22 @@
                         <label class="block text-xs text-slate-400 mb-1">Nama Kasir</label>
                         <input type="text" id="inputCashierName" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-200 focus:outline-none focus:border-emerald-500" value="Admin">
                     </div>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Tanggal Harian (Editable)</label>
+                        <input type="date" id="inputDate" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-200 focus:outline-none focus:border-emerald-500">
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">Jam Masuk Kasir</label>
+                            <input type="time" id="inputTimeIn" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-200 focus:outline-none focus:border-emerald-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">Jam Closing Kasir</label>
+                            <input type="time" id="inputTimeOut" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-200 focus:outline-none focus:border-emerald-500">
+                        </div>
+                    </div>
                 </div>
-                <button onclick="saveHeaderInfo()" class="mt-4 bg-emerald-600 hover:bg-emerald-500 text-white font-medium px-5 py-2 rounded-xl text-sm transition shadow-md">Simpan Perubahan Info</button>
+                <button onclick="saveHeaderInfo()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-medium px-5 py-2 rounded-xl text-sm transition shadow-md">Simpan Informasi Shift</button>
             </div>
         </div>
 
@@ -77,24 +107,24 @@
             <div class="bg-slate-800/60 border border-slate-700/80 p-5 rounded-2xl shadow-lg">
                 <h2 class="text-lg font-bold text-emerald-300 mb-3">Kelola Kategori & Menu</h2>
                 
-                <!-- Form Tambah Kategori dengan Pilihan Warna -->
+                <!-- Form Tambah Kategori -->
                 <div class="flex gap-2 mb-4">
-                    <input type="text" id="newCategoryName" placeholder="Nama Kategori Baru" class="flex-grow bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-emerald-500">
+                    <input type="text" id="newCategoryName" placeholder="Contoh: Makanan Berat..." class="flex-grow bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-emerald-500">
                     <input type="color" id="newCategoryColor" value="#10b981" class="w-10 h-10 bg-slate-900 border border-slate-700 rounded-xl cursor-pointer p-1">
                     <button onclick="addCategory()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-xl text-sm font-medium transition shadow-md">Tambah Kategori</button>
                 </div>
 
-                <!-- Form Tambah Menu -->
-                <div class="grid grid-cols-1 sm:grid-cols-4 gap-2 mb-4">
-                    <input type="text" id="newMenuName" placeholder="Nama Menu" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-emerald-500">
+                <!-- Form Tambah Menu dengan Titik Panduan Jelas -->
+                <div class="grid grid-cols-1 sm:grid-cols-4 gap-2 mb-2">
+                    <input type="text" id="newMenuName" placeholder="• Nama Menu (cth: Ayam Geprek)" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-emerald-500">
                     <select id="newMenuCategory" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-emerald-500"></select>
-                    <input type="number" id="newMenuPrice" placeholder="Harga (Rp)" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-emerald-500">
+                    <input type="number" id="newMenuPrice" placeholder="• Harga Rp (cth: 15000)" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-emerald-500">
                     <button onclick="addMenuItem()" class="bg-cyan-600 hover:bg-cyan-500 text-white px-4 py-2 rounded-xl text-sm font-medium transition shadow-md">Tambah Menu</button>
                 </div>
             </div>
 
-            <!-- Daftar Menu Card Grid (Tanpa Foto, Vertikal, Warna Kategori) -->
-            <div id="masterMenuList" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3"></div>
+            <!-- Daftar Menu Dikelompokkan per Kategori -->
+            <div id="masterCategoryGroupedList" class="space-y-6"></div>
         </div>
 
         <!-- ================= TAB 2 (KASIR / TRANSAKSI) ================= -->
@@ -103,7 +133,6 @@
                 <h2 class="text-lg font-bold text-emerald-300 mb-3">POS / Transaksi Penjualan</h2>
                 
                 <div id="posCategoryFilter" class="flex flex-wrap gap-2 mb-4"></div>
-
                 <div id="posMenuGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6"></div>
 
                 <div class="border-t border-slate-700 pt-4">
@@ -116,12 +145,14 @@
                             <p id="cartTotalText" class="text-lg font-bold text-emerald-400">Rp 0</p>
                         </div>
                         <div class="flex gap-2 w-full sm:w-auto">
+                            <!-- KOL dimasukkan bersanding di kanal transaksi -->
                             <select id="paymentChannel" class="bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none">
                                 <option value="Cash">Cash (Offline)</option>
                                 <option value="QRIS">QRIS (Offline)</option>
                                 <option value="Grab">Grab (Online)</option>
                                 <option value="Shopee">Shopee (Online)</option>
                                 <option value="Gofood">Gofood (Online)</option>
+                                <option value="KOL">KOL (Endorse / Non-Revenue)</option>
                             </select>
                             <button onclick="checkoutOrder()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-2 rounded-xl text-sm font-medium transition shadow-md flex-grow sm:flex-grow-0">Proses Transaksi</button>
                         </div>
@@ -129,19 +160,15 @@
                 </div>
             </div>
 
-            <!-- Riwayat dengan penomoran dinamis Penjualan & KOL -->
+            <!-- Riwayat dengan tombol hapus transaksi & penomoran dinamis Penjualan/KOL -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div class="bg-slate-800/60 border border-slate-700/80 p-4 rounded-2xl shadow-lg">
                     <h3 class="text-sm font-semibold text-emerald-300 mb-2">Penjualan (Penjualan 1, 2...)</h3>
-                    <div id="salesListContainer" class="space-y-2 max-h-40 overflow-y-auto">
-                        <p class="text-xs text-slate-500 italic">Belum ada transaksi.</p>
-                    </div>
+                    <div id="salesListContainer" class="space-y-2 max-h-48 overflow-y-auto"></div>
                 </div>
                 <div class="bg-slate-800/60 border border-slate-700/80 p-4 rounded-2xl shadow-lg">
                     <h3 class="text-sm font-semibold text-pink-400 mb-2">KOL (KOL 1, 2...)</h3>
-                    <div id="kolListContainer" class="space-y-2 max-h-40 overflow-y-auto">
-                        <p class="text-xs text-slate-500 italic">Belum ada data KOL.</p>
-                    </div>
+                    <div id="kolListContainer" class="space-y-2 max-h-48 overflow-y-auto"></div>
                 </div>
             </div>
         </div>
@@ -166,9 +193,9 @@
         <div id="tab-export" class="tab-content space-y-4">
             <div class="bg-slate-800/60 border border-slate-700/80 p-5 rounded-2xl shadow-lg">
                 <h2 class="text-lg font-bold text-emerald-300 mb-3">Export Laporan Chat Format</h2>
-                <p class="text-xs text-slate-400 mb-3">Pratinjau laporan lengkap siap salin ke grup chat.</p>
+                <p class="text-xs text-slate-400 mb-3">Pratinjau laporan rinci harian siap salin ke grup.</p>
                 
-                <textarea id="exportReportText" readonly rows="12" class="w-full bg-slate-900 border border-slate-700 rounded-2xl p-3 text-xs text-slate-300 font-mono focus:outline-none mb-3"></textarea>
+                <textarea id="exportReportText" readonly rows="14" class="w-full bg-slate-900 border border-slate-700 rounded-2xl p-3 text-xs text-slate-300 font-mono focus:outline-none mb-3"></textarea>
                 
                 <button onclick="copyReportText()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-medium px-5 py-2.5 rounded-xl text-sm transition shadow-md w-full sm:w-auto">Salin Laporan ke Clipboard</button>
             </div>
@@ -178,7 +205,6 @@
         <div id="tab-settings" class="tab-content space-y-4">
             <div class="bg-slate-800/60 border border-slate-700/80 p-5 rounded-2xl shadow-lg">
                 <h2 class="text-lg font-bold text-emerald-300 mb-3">Pengaturan Dasar Sistem</h2>
-                
                 <div class="space-y-4 text-sm">
                     <div>
                         <label class="block text-xs text-slate-400 mb-1">Ganti Nama Outlet</label>
@@ -195,7 +221,7 @@
 
     </main>
 
-    <!-- MODERN NOTIFICATION POPUP (ROUNDED) -->
+    <!-- MODERN NOTIFICATION POPUP -->
     <div id="appNotification" class="fixed bottom-20 right-4 bg-emerald-600 text-white px-4 py-3 rounded-2xl shadow-xl transform translate-y-20 opacity-0 transition-all duration-300 z-50 text-xs font-medium flex items-center gap-2 border border-emerald-500">
         <span>✅</span> <span id="notificationText">Berhasil menyimpan data!</span>
     </div>
@@ -203,24 +229,12 @@
     <!-- BOTTOM NAVIGATION BAR -->
     <nav class="bg-slate-950/90 backdrop-blur-md border-t border-slate-800 p-2 fixed bottom-0 left-0 right-0 z-40 rounded-t-2xl shadow-2xl">
         <div class="max-w-4xl mx-auto grid grid-cols-6 gap-1 text-center text-[10px] font-medium text-slate-400">
-            <button onclick="switchTab('home')" id="nav-home" class="py-2 rounded-xl hover:bg-slate-800 transition text-emerald-400 flex flex-col items-center">
-                <span class="text-base">🏠</span> Home
-            </button>
-            <button onclick="switchTab('menu')" id="nav-menu" class="py-2 rounded-xl hover:bg-slate-800 transition flex flex-col items-center">
-                <span class="text-base">📋</span> Menu
-            </button>
-            <button onclick="switchTab('kasir')" id="nav-kasir" class="py-2 rounded-xl hover:bg-slate-800 transition flex flex-col items-center">
-                <span class="text-base">🛍️</span> Kasir
-            </button>
-            <button onclick="switchTab('keuangan')" id="nav-keuangan" class="py-2 rounded-xl hover:bg-slate-800 transition flex flex-col items-center">
-                <span class="text-base">💰</span> Keuangan
-            </button>
-            <button onclick="switchTab('export')" id="nav-export" class="py-2 rounded-xl hover:bg-slate-800 transition flex flex-col items-center">
-                <span class="text-base">📤</span> Laporan
-            </button>
-            <button onclick="switchTab('settings')" id="nav-settings" class="py-2 rounded-xl hover:bg-slate-800 transition flex flex-col items-center">
-                <span class="text-base">⚙️</span> Setting
-            </button>
+            <button onclick="switchTab('home')" id="nav-home" class="py-2 rounded-xl hover:bg-slate-800 transition text-emerald-400 flex flex-col items-center"><span class="text-base">🏠</span> Home</button>
+            <button onclick="switchTab('menu')" id="nav-menu" class="py-2 rounded-xl hover:bg-slate-800 transition flex flex-col items-center"><span class="text-base">📋</span> Menu</button>
+            <button onclick="switchTab('kasir')" id="nav-kasir" class="py-2 rounded-xl hover:bg-slate-800 transition flex flex-col items-center"><span class="text-base">🛍️</span> Kasir</button>
+            <button onclick="switchTab('keuangan')" id="nav-keuangan" class="py-2 rounded-xl hover:bg-slate-800 transition flex flex-col items-center"><span class="text-base">💰</span> Keuangan</button>
+            <button onclick="switchTab('export')" id="nav-export" class="py-2 rounded-xl hover:bg-slate-800 transition flex flex-col items-center"><span class="text-base">📤</span> Laporan</button>
+            <button onclick="switchTab('settings')" id="nav-settings" class="py-2 rounded-xl hover:bg-slate-800 transition flex flex-col items-center"><span class="text-base">⚙️</span> Setting</button>
         </div>
     </nav>
 
@@ -230,15 +244,15 @@
             outletName: "Outlet Utama",
             cashierName: "Admin",
             date: new Date().toISOString().split('T')[0],
+            timeIn: "08:00",
+            timeOut: "21:00",
             categories: [
                 { id: 'cat1', name: 'Makanan', color: '#f59e0b' },
-                { id: 'cat2', name: 'Minuman', color: '#3b82f6' },
-                { id: 'cat3', name: 'KOL', color: '#ec4899' }
+                { id: 'cat2', name: 'Minuman', color: '#3b82f6' }
             ],
             menuItems: [
                 { id: 'm1', name: 'Nasi Goreng Special', category: 'Makanan', price: 25000, isNew: true },
-                { id: 'm2', name: 'Es Teh Manis', category: 'Minuman', price: 5000, isNew: true },
-                { id: 'm3', name: 'Paket Endorse KOL', category: 'KOL', price: 0, isNew: false }
+                { id: 'm2', name: 'Es Teh Manis', category: 'Minuman', price: 5000, isNew: true }
             ],
             cart: [],
             transactions: [],
@@ -247,9 +261,12 @@
         };
 
         window.onload = function() {
-            updateHeaderDateTime();
+            document.getElementById('inputDate').value = appData.date;
+            document.getElementById('inputTimeIn').value = appData.timeIn;
+            document.getElementById('inputTimeOut').value = appData.timeOut;
+            updateHeaderDisplay();
             renderCategories();
-            renderMenuList();
+            renderMasterGroupedList();
             renderPosCategoryFilter();
             renderPosMenuGrid();
             renderCart();
@@ -261,10 +278,10 @@
             document.getElementById('settingCashierName').value = appData.cashierName;
         };
 
-        function updateHeaderDateTime() {
-            const now = new Date();
-            document.getElementById('headerDate').innerText = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
-            document.getElementById('headerTime').innerText = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+        function updateHeaderDisplay() {
+            document.getElementById('headerDateDisplay').innerText = appData.date;
+            document.getElementById('headerTimeIn').innerText = appData.timeIn;
+            document.getElementById('headerTimeOut').innerText = appData.timeOut;
         }
 
         function switchTab(tabId) {
@@ -275,23 +292,27 @@
             document.getElementById(`nav-${tabId}`).classList.add('text-emerald-400', 'bg-slate-800/40');
             
             if(tabId === 'export') generateReportText();
+            if(tabId === 'home') updateDashboardSummaries();
         }
 
         function showNotification(msg) {
             const notif = document.getElementById('appNotification');
             document.getElementById('notificationText').innerText = msg;
             notif.classList.remove('translate-y-20', 'opacity-0');
-            setTimeout(() => {
-                notif.classList.add('translate-y-20', 'opacity-0');
-            }, 2500);
+            setTimeout(() => { notif.classList.add('translate-y-20', 'opacity-0'); }, 2500);
         }
 
         function saveHeaderInfo() {
             appData.outletName = document.getElementById('inputOutletName').value;
             appData.cashierName = document.getElementById('inputCashierName').value;
+            appData.date = document.getElementById('inputDate').value;
+            appData.timeIn = document.getElementById('inputTimeIn').value;
+            appData.timeOut = document.getElementById('inputTimeOut').value;
+
             document.getElementById('headerOutletName').innerText = appData.outletName;
             document.getElementById('headerCashierName').innerText = appData.cashierName;
-            showNotification("Informasi outlet berhasil diperbarui!");
+            updateHeaderDisplay();
+            showNotification("Informasi shift & tanggal berhasil disimpan!");
         }
 
         function saveSettings() {
@@ -319,28 +340,57 @@
             appData.categories.push({ id: 'cat_' + Date.now(), name, color });
             document.getElementById('newCategoryName').value = '';
             renderCategories();
+            renderMasterGroupedList();
             renderPosCategoryFilter();
             showNotification("Kategori baru berhasil ditambahkan!");
         }
 
-        function renderMenuList() {
-            const container = document.getElementById('masterMenuList');
+        function deleteCategory(catName) {
+            appData.categories = appData.categories.filter(c => c.name !== catName);
+            appData.menuItems = appData.menuItems.filter(m => m.category !== catName);
+            renderCategories();
+            renderMasterGroupedList();
+            renderPosCategoryFilter();
+            renderPosMenuGrid();
+            showNotification("Kategori berhasil dihapus.");
+        }
+
+        // Render Master Menu Dikelompokkan per Kategori
+        function renderMasterGroupedList() {
+            const container = document.getElementById('masterCategoryGroupedList');
             container.innerHTML = '';
-            appData.menuItems.forEach(item => {
-                const catObj = appData.categories.find(c => c.name === item.category);
-                const colorTag = catObj ? catObj.color : '#10b981';
+
+            appData.categories.forEach(cat => {
+                const itemsInCat = appData.menuItems.filter(m => m.category === cat.name);
                 
-                container.innerHTML += `
-                    <div class="bg-slate-800/80 border border-slate-700/80 p-4 rounded-2xl shadow-md flex flex-col justify-between">
-                        <div>
-                            <div class="flex justify-between items-start mb-2">
-                                <span class="text-[10px] px-2 py-0.5 rounded-lg text-white font-medium" style="background-color: ${colorTag}">${item.category}</span>
-                                ${item.isNew ? '<span class="text-[10px] bg-rose-500/20 text-rose-300 border border-rose-500/30 px-2 py-0.5 rounded-lg font-bold">BARU</span>' : ''}
+                let itemsHtml = itemsInCat.length === 0 ? '<p class="text-xs text-slate-500 italic">Belum ada menu dalam kategori ini.</p>' : '<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">';
+                
+                itemsInCat.forEach(item => {
+                    itemsHtml += `
+                        <div class="bg-slate-800/80 border border-slate-700/80 p-4 rounded-2xl shadow-md flex flex-col justify-between">
+                            <div>
+                                <div class="flex justify-between items-start mb-2">
+                                    <span class="text-[10px] px-2 py-0.5 rounded-lg text-white font-medium" style="background-color: ${cat.color}">${item.category}</span>
+                                    ${item.isNew ? '<span class="text-[10px] bg-rose-500/20 text-rose-300 border border-rose-500/30 px-2 py-0.5 rounded-lg font-bold">BARU</span>' : ''}
+                                </div>
+                                <h4 class="font-bold text-slate-200 text-sm mb-1">${item.name}</h4>
+                                <p class="text-xs text-emerald-400 font-semibold">Rp ${item.price.toLocaleString('id-ID')}</p>
                             </div>
-                            <h4 class="font-bold text-slate-200 text-sm mb-1">${item.name}</h4>
-                            <p class="text-xs text-emerald-400 font-semibold">Rp ${item.price.toLocaleString('id-ID')}</p>
+                            <button onclick="deleteMenuItem('${item.id}')" class="mt-3 text-rose-400 hover:text-rose-300 text-xs text-left font-medium">Hapus Menu</button>
                         </div>
-                        <button onclick="deleteMenuItem('${item.id}')" class="mt-3 text-rose-400 hover:text-rose-300 text-xs text-left font-medium">Hapus Menu</button>
+                    `;
+                });
+                if(itemsInCat.length > 0) itemsHtml += '</div>';
+
+                container.innerHTML += `
+                    <div class="bg-slate-800/40 border border-slate-700/60 p-4 rounded-2xl shadow-lg">
+                        <div class="flex justify-between items-center mb-3 pb-2 border-b border-slate-700">
+                            <h3 class="font-bold text-sm text-slate-200 flex items-center gap-2">
+                                <span class="w-3 h-3 rounded-full inline-block" style="background-color: ${cat.color}"></span> ${cat.name}
+                            </h3>
+                            <button onclick="deleteCategory('${cat.name}')" class="text-xs text-rose-400 hover:text-rose-300">Hapus Kategori</button>
+                        </div>
+                        ${itemsHtml}
                     </div>
                 `;
             });
@@ -355,14 +405,14 @@
             appData.menuItems.push({ id: 'm_' + Date.now(), name, category, price, isNew: true });
             document.getElementById('newMenuName').value = '';
             document.getElementById('newMenuPrice').value = '';
-            renderMenuList();
+            renderMasterGroupedList();
             renderPosMenuGrid();
             showNotification("Menu baru berhasil ditambahkan!");
         }
 
         function deleteMenuItem(id) {
             appData.menuItems = appData.menuItems.filter(m => m.id !== id);
-            renderMenuList();
+            renderMasterGroupedList();
             renderPosMenuGrid();
             showNotification("Menu berhasil dihapus.");
         }
@@ -435,7 +485,6 @@
                     </div>
                 `;
             });
-
             document.getElementById('cartTotalText').innerText = `Rp ${total.toLocaleString('id-ID')}`;
         }
 
@@ -449,7 +498,7 @@
             if(appData.cart.length === 0) return;
             const channel = document.getElementById('paymentChannel').value;
             let totalAmount = appData.cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
-            let isKOL = appData.cart.some(i => i.category === 'KOL');
+            let isKOL = (channel === 'KOL');
 
             appData.transactions.push({
                 id: 'trx_' + Date.now(),
@@ -465,6 +514,13 @@
             renderTransactionsList();
             updateDashboardSummaries();
             showNotification("Transaksi berhasil diproses!");
+        }
+
+        function deleteTransaction(trxId) {
+            appData.transactions = appData.transactions.filter(t => t.id !== trxId);
+            renderTransactionsList();
+            updateDashboardSummaries();
+            showNotification("Transaksi berhasil dihapus.");
         }
 
         function renderTransactionsList() {
@@ -486,8 +542,9 @@
                             <div>
                                 <p class="font-bold text-pink-300">KOL ${kolCount++}</p>
                                 <p class="text-[10px] text-slate-400">${trx.items.map(i => i.name + ' (' + i.qty + ')').join(', ')}</p>
+                                <p class="text-[9px] text-slate-500">${trx.time}</p>
                             </div>
-                            <span class="text-[10px] text-slate-500">${trx.time}</span>
+                            <button onclick="deleteTransaction('${trx.id}')" class="text-rose-400 hover:text-rose-300 text-[10px]">Hapus</button>
                         </div>
                     `;
                 } else {
@@ -496,9 +553,10 @@
                         <div class="bg-slate-900 p-2.5 rounded-xl border border-slate-700 text-xs flex justify-between items-center">
                             <div>
                                 <p class="font-bold text-emerald-300">Penjualan ${salesCount++} (${trx.channel})</p>
-                                <p class="text-[10px] text-slate-400">Rp ${trx.total.toLocaleString('id-ID')}</p>
+                                <p class="text-[10px] text-slate-400">Rp ${trx.total.toLocaleString('id-ID')} | ${trx.items.map(i => i.name + ' (' + i.qty + ')').join(', ')}</p>
+                                <p class="text-[9px] text-slate-500">${trx.time}</p>
                             </div>
-                            <span class="text-[10px] text-slate-500">${trx.time}</span>
+                            <button onclick="deleteTransaction('${trx.id}')" class="text-rose-400 hover:text-rose-300 text-[10px]">Hapus</button>
                         </div>
                     `;
                 }
@@ -548,36 +606,94 @@
             updateDashboardSummaries();
         }
 
+        // Summary Calculations & Advanced Home Insights
         function updateDashboardSummaries() {
-            let totalSales = appData.transactions.reduce((sum, t) => sum + t.total, 0);
-            let offlineSales = appData.transactions.filter(t => ['Cash', 'QRIS'].includes(t.channel)).reduce((sum, t) => sum + t.total, 0);
-            let onlineSales = appData.transactions.filter(t => ['Grab', 'Shopee', 'Gofood'].includes(t.channel)).reduce((sum, t) => sum + t.total, 0);
+            let validSalesTrx = appData.transactions.filter(t => !t.isKOL);
+            let totalSales = validSalesTrx.reduce((sum, t) => sum + t.total, 0);
+            let offlineSales = validSalesTrx.filter(t => ['Cash', 'QRIS'].includes(t.channel)).reduce((sum, t) => sum + t.total, 0);
+            let onlineSales = validSalesTrx.filter(t => ['Grab', 'Shopee', 'Gofood'].includes(t.channel)).reduce((sum, t) => sum + t.total, 0);
             let totalExpense = appData.expenses.reduce((sum, e) => sum + (e.price * e.qty), 0);
-            let cashSales = appData.transactions.filter(t => t.channel === 'Cash').reduce((sum, t) => sum + t.total, 0);
+            let cashSales = validSalesTrx.filter(t => t.channel === 'Cash').reduce((sum, t) => sum + t.total, 0);
             let closeMoney = (cashSales + appData.openUang) - totalExpense;
 
             document.getElementById('homeTotalSales').innerText = `Rp ${totalSales.toLocaleString('id-ID')}`;
             document.getElementById('homeBreakdownSales').innerText = `Off: Rp ${offlineSales.toLocaleString('id-ID')} | On: Rp ${onlineSales.toLocaleString('id-ID')}`;
             document.getElementById('homeTotalExpense').innerText = `Rp ${totalExpense.toLocaleString('id-ID')}`;
             document.getElementById('homeCloseMoney').innerText = `Rp ${closeMoney.toLocaleString('id-ID')}`;
+
+            // Analisis 3 Menu Terbanyak
+            let menuCountMap = {};
+            validSalesTrx.forEach(trx => {
+                trx.items.forEach(i => {
+                    menuCountMap[i.name] = (menuCountMap[i.name] || 0) + i.qty;
+                });
+            });
+            let sortedMenus = Object.entries(menuCountMap).sort((a, b) => b[1] - a[1]).slice(0, 3);
+            let topMenusEl = document.getElementById('homeTopMenus');
+            topMenusEl.innerHTML = sortedMenus.length === 0 ? '<li class="text-slate-500 italic">Belum ada penjualan.</li>' : sortedMenus.map(([name, qty], idx) => `<li>${idx + 1}. <b>${name}</b> (${qty} terjual)</li>`).join('');
+
+            // Analisis Omset per Kanal Terbanyak
+            let channelMap = {};
+            validSalesTrx.forEach(trx => {
+                channelMap[trx.channel] = (channelMap[trx.channel] || 0) + trx.total;
+            });
+            let sortedChannels = Object.entries(channelMap).sort((a, b) => b[1] - a[1]);
+            let topChannelEl = document.getElementById('homeTopChannel');
+            topChannelEl.innerHTML = sortedChannels.length === 0 ? '<p class="text-slate-500 italic">Belum ada data kanal.</p>' : sortedChannels.map(([ch, amt], idx) => `<p>${idx + 1}. <b>${ch}</b>: Rp ${amt.toLocaleString('id-ID')}</p>`).join('');
         }
 
+        // Detailed Report Generator
         function generateReportText() {
-            let totalSales = appData.transactions.reduce((sum, t) => sum + t.total, 0);
-            let offlineSales = appData.transactions.filter(t => ['Cash', 'QRIS'].includes(t.channel)).reduce((sum, t) => sum + t.total, 0);
-            let onlineSales = appData.transactions.filter(t => ['Grab', 'Shopee', 'Gofood'].includes(t.channel)).reduce((sum, t) => sum + t.total, 0);
+            let validSalesTrx = appData.transactions.filter(t => !t.isKOL);
+            let kolTrx = appData.transactions.filter(t => t.isKOL);
+
+            let totalSales = validSalesTrx.reduce((sum, t) => sum + t.total, 0);
+            let offlineSales = validSalesTrx.filter(t => ['Cash', 'QRIS'].includes(t.channel)).reduce((sum, t) => sum + t.total, 0);
+            let onlineSales = validSalesTrx.filter(t => ['Grab', 'Shopee', 'Gofood'].includes(t.channel)).reduce((sum, t) => sum + t.total, 0);
             let totalExpense = appData.expenses.reduce((sum, e) => sum + (e.price * e.qty), 0);
-            let cashSales = appData.transactions.filter(t => t.channel === 'Cash').reduce((sum, t) => sum + t.total, 0);
+            let cashSales = validSalesTrx.filter(t => t.channel === 'Cash').reduce((sum, t) => sum + t.total, 0);
             let closeMoney = (cashSales + appData.openUang) - totalExpense;
 
             let report = `📊 LAPORAN HARIAN - ${appData.outletName}\n`;
             report += `📅 Tanggal: ${appData.date}\n`;
-            report += `👤 Kasir: ${appData.cashierName}\n\n`;
-            report += `💰 Total Penjualan: Rp ${totalSales.toLocaleString('id-ID')}\n`;
-            report += `   - Offline: Rp ${offlineSales.toLocaleString('id-ID')}\n`;
-            report += `   - Online: Rp ${onlineSales.toLocaleString('id-ID')}\n\n`;
-            report += `💸 Total Pengeluaran: Rp ${totalExpense.toLocaleString('id-ID')}\n`;
-            report += `🔒 Close Uang Outlet: Rp ${closeMoney.toLocaleString('id-ID')}\n`;
+            report += `👤 Kasir: ${appData.cashierName} (Masuk: ${appData.timeIn} | Closing: ${appData.timeOut})\n\n`;
+            
+            report += `💰 RINGKASAN OMSET:\n`;
+            report += `• Total Penjualan: Rp ${totalSales.toLocaleString('id-ID')}\n`;
+            report += `  - Offline (Cash/QRIS): Rp ${offlineSales.toLocaleString('id-ID')}\n`;
+            report += `  - Online (Grab/Shopee/Gofood): Rp ${onlineSales.toLocaleString('id-ID')}\n\n`;
+
+            report += `📝 RINCIAN PENJUALAN (${validSalesTrx.length} transaksi):\n`;
+            if(validSalesTrx.length === 0) {
+                report += `- Belum ada transaksi\n`;
+            } else {
+                validSalesTrx.forEach((t, i) => {
+                    report += `${i + 1}. [${t.channel}] Rp ${t.total.toLocaleString('id-ID')} (${t.items.map(it => it.name + ' x' + it.qty).join(', ')}) - ${t.time}\n`;
+                });
+            }
+
+            report += `\n🎁 RINCIAN KOL (${kolTrx.length} item):\n`;
+            if(kolTrx.length === 0) {
+                report += `- Tidak ada KOL\n`;
+            } else {
+                kolTrx.forEach((k, i) => {
+                    report += `${i + 1}. ${k.items.map(it => it.name + ' x' + it.qty).join(', ')} - ${k.time}\n`;
+                });
+            }
+
+            report += `\n💸 PENGELUARAN:\n`;
+            if(appData.expenses.length === 0 || !appData.expenses[0].item) {
+                report += `- Tidak ada pengeluaran\n`;
+            } else {
+                appData.expenses.forEach(e => {
+                    if(e.item) report += `• ${e.item}: Rp ${(e.price * e.qty).toLocaleString('id-ID')}\n`;
+                });
+                report += `Total Pengeluaran: Rp ${totalExpense.toLocaleString('id-ID')}\n`;
+            }
+
+            report += `\n🔒 CLOSE UANG OUTLET:\n`;
+            report += `(Cash Sales Rp ${cashSales.toLocaleString('id-ID')} + Open Uang Rp ${appData.openUang.toLocaleString('id-ID')}) - Pengeluaran Rp ${totalExpense.toLocaleString('id-ID')}\n`;
+            report += `= Rp ${closeMoney.toLocaleString('id-ID')}\n`;
 
             document.getElementById('exportReportText').value = report;
         }
@@ -586,7 +702,7 @@
             const textarea = document.getElementById('exportReportText');
             textarea.select();
             navigator.clipboard.writeText(textarea.value);
-            showNotification("Laporan berhasil disalin ke clipboard!");
+            showNotification("Laporan rinci berhasil disalin ke clipboard!");
         }
     </script>
 </body>

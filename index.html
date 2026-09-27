@@ -42,20 +42,23 @@
             margin-bottom: 5px;
         }
 
-        .outlet-input {
-            margin-bottom: 15px;
-            text-align: center;
-        }
-        .outlet-input input {
-            text-align: center;
-            font-weight: bold;
-            font-size: 1.1rem;
-            padding: 8px;
-            width: 60%;
-            background: #0f172a;
+        /* Header Info Utama (Di luar tab) */
+        .main-header-box {
+            background: #131c31;
             border: 1px solid var(--border-color);
-            color: var(--text-color);
-            border-radius: 8px;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        .main-header-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .main-header-row.full {
+            grid-template-columns: 1fr;
+            margin-bottom: 0;
         }
 
         /* Navigasi Tab */
@@ -102,6 +105,10 @@
             color: var(--text-color);
             box-sizing: border-box;
             font-size: 1rem;
+        }
+        input[type="text"]:focus, input[type="date"]:focus, input[type="time"]:focus, select:focus {
+            border-color: var(--accent-color);
+            outline: none;
         }
 
         .btn {
@@ -314,8 +321,29 @@
 
 <div class="container">
     <h2>Aplikasi Kasir & Laporan</h2>
-    <div class="outlet-input">
-        <input type="text" id="outlet" value="TAMALATE" oninput="updateAll()">
+
+    <!-- HEADER UTAMA DI LUAR TAB (Tengah, Jelas, & Rapi) -->
+    <div class="main-header-box">
+        <div class="main-header-row">
+            <div>
+                <label>Nama Outlet</label>
+                <input type="text" id="outlet" value="TAMALATE" style="text-align: center; font-weight: bold;" oninput="updateAll()">
+            </div>
+            <div>
+                <label>Tanggal Laporan</label>
+                <input type="date" id="tanggal" style="text-align: center; font-weight: bold;" onchange="updateAll()">
+            </div>
+        </div>
+        <div class="main-header-row">
+            <div>
+                <label>Nama Kasir</label>
+                <input type="text" id="namaKasir" value="Andi" placeholder="Nama Kasir" style="text-align: center;" oninput="updateAll()">
+            </div>
+            <div>
+                <label>Jam Masuk</label>
+                <input type="time" id="jamMasuk" value="15:00" style="text-align: center;" onchange="updateAll()">
+            </div>
+        </div>
     </div>
 
     <!-- Navigasi Tab Utama -->
@@ -414,10 +442,7 @@
     <!-- TAB 3: KEUANGAN & MODAL -->
     <div id="tab-keuangan" class="tab-content">
         <h3>Keuangan & Modal Harian</h3>
-        <div class="form-group">
-            <label>Tanggal Laporan</label>
-            <input type="date" id="tanggal" onchange="updateAll()">
-        </div>
+        
         <div class="form-group">
             <label>Open Uang Outlet (Modal / Uang Kecil)</label>
             <input type="text" id="openUang" value="313.000" oninput="formatInputRupiah(this); updateAll()">
@@ -483,6 +508,7 @@
 </div>
 
 <script>
+    // Set tanggal default secara otomatis ke hari ini saat web dibuka
     document.getElementById('tanggal').valueAsDate = new Date();
 
     let listKategori = ["Terbul", "Martabak", "Paket"];
@@ -778,7 +804,6 @@
         }
         container.innerHTML = '';
         
-        // Hitung nomor urut terpisah untuk Penjualan dan KOL
         let countPenjualan = 0;
         let countKol = 0;
 
@@ -859,6 +884,8 @@
     function generateReportString() {
         const outlet = document.getElementById('outlet').value.toUpperCase();
         const formattedDate = formatTanggalIndo(document.getElementById('tanggal').value);
+        const namaKasir = document.getElementById('namaKasir').value;
+        const jamMasuk = document.getElementById('jamMasuk').value;
 
         const grabTot = formatRupiah(dataPenjualan.grab.total);
         const shopeeTot = formatRupiah(dataPenjualan.shopee.total);
@@ -866,19 +893,16 @@
         const cashTot = formatRupiah(dataPenjualan.cash.total);
         const qrisTot = formatRupiah(dataPenjualan.qris.total);
 
-        // Kalkulasi Total Kategori
         const totalOffline = dataPenjualan.cash.total + dataPenjualan.qris.total;
         const totalOnline = dataPenjualan.grab.total + dataPenjualan.shopee.total + dataPenjualan.gofood.total;
         const totalSemua = totalOffline + totalOnline;
 
-        // Hitung total qty KOL
         let totalKolQty = 0;
         dataPenjualan.kol.rincian.forEach(r => {
             let match = r.match(/\((\d+)\)$/);
             if (match) totalKolQty += parseInt(match[1], 10);
         });
 
-        // Update tampilan header Tab 2
         document.getElementById('totalOfflineHeader').innerText = `Rp ${formatRupiah(totalOffline)}`;
         document.getElementById('totalOnlineHeader').innerText = `Rp ${formatRupiah(totalOnline)}`;
         document.getElementById('totalSemuaHeader').innerText = `Rp ${formatRupiah(totalSemua)}`;
@@ -889,18 +913,17 @@
         let totalPengeluaran = listPengeluaranData.reduce((sum, p) => sum + p.total, 0);
         let pengeluaranDetailStr = listPengeluaranData.map(p => `• ${p.item} harga Rp${formatRupiah(p.harga)} (${p.qty}) = Rp${formatRupiah(p.total)}`).join('\n');
 
-        // Close Uang Outlet: (Penjualan Cash + Open Uang Outlet) - Total Pengeluaran
         const closeUang = (dataPenjualan.cash.total + openUang) - totalPengeluaran;
-
         document.getElementById('highlightCloseUang').innerText = `Rp ${formatRupiah(closeUang)}`;
 
         let kolDetStr = dataPenjualan.kol.rincian.join('\n');
         let cashDetStr = dataPenjualan.cash.rincian.join('\n');
         let qrisDetStr = dataPenjualan.qris.rincian.join('\n');
 
-        let text = `${outlet} ${formattedDate}\n\n`;
+        // Susunan teks laporan dengan info Outlet, Tanggal, Kasir, dan Jam Masuk
+        let text = `${outlet} ${formattedDate}\n` +
+                   `Kasir: ${namaKasir} (Masuk: ${jamMasuk})\n\n`;
 
-        // Bagian KOL ditaruh di paling atas teks
         if (dataPenjualan.kol.rincian.length > 0) {
             text += `KOL\n${kolDetStr}\n\n`;
         } else {

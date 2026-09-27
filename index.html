@@ -3,15 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Loyverse POS Daily Report</title>
-    <!-- Tailwind CSS untuk kemudahan styling rounded modern -->
+    <title>Loyverse POS Daily Report - Ultimate</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .tab-content { display: none; }
         .tab-content.active { display: block; }
     </style>
 </head>
-<body class="bg-slate-900 text-slate-100 font-sans antialiased min-h-screen flex flex-col justify-between">
+<body class="bg-slate-900 text-slate-100 font-sans antialiased min-h-screen flex flex-col justify-between pb-24">
 
     <!-- TOP HEADER / GLOBAL BAR -->
     <header class="bg-emerald-950 border-b border-emerald-900 p-4 shadow-md rounded-b-2xl mx-2 mt-2">
@@ -37,18 +36,22 @@
         <div id="tab-home" class="tab-content active space-y-4">
             <div class="bg-emerald-900/40 border border-emerald-800/60 p-5 rounded-2xl shadow-lg backdrop-blur-md">
                 <h2 class="text-lg font-bold text-emerald-200 mb-3">Ringkasan Operasional Harian</h2>
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                     <div class="bg-slate-800/80 p-4 rounded-2xl border border-slate-700">
                         <p class="text-xs text-slate-400">Total Penjualan</p>
-                        <p id="homeTotalSales" class="text-xl font-extrabold text-emerald-400 mt-1">Rp 0</p>
+                        <p id="homeTotalSales" class="text-lg font-extrabold text-emerald-400 mt-1">Rp 0</p>
+                    </div>
+                    <div class="bg-slate-800/80 p-4 rounded-2xl border border-slate-700">
+                        <p class="text-xs text-slate-400">Penjualan Offline / Online</p>
+                        <p id="homeBreakdownSales" class="text-xs font-bold text-slate-200 mt-2">Off: Rp 0 | On: Rp 0</p>
                     </div>
                     <div class="bg-slate-800/80 p-4 rounded-2xl border border-slate-700">
                         <p class="text-xs text-slate-400">Total Pengeluaran</p>
-                        <p id="homeTotalExpense" class="text-xl font-extrabold text-rose-400 mt-1">Rp 0</p>
+                        <p id="homeTotalExpense" class="text-lg font-extrabold text-rose-400 mt-1">Rp 0</p>
                     </div>
                     <div class="bg-slate-800/80 p-4 rounded-2xl border border-slate-700">
                         <p class="text-xs text-slate-400">Close Uang Outlet</p>
-                        <p id="homeCloseMoney" class="text-xl font-extrabold text-cyan-400 mt-1">Rp 0</p>
+                        <p id="homeCloseMoney" class="text-lg font-extrabold text-cyan-400 mt-1">Rp 0</p>
                     </div>
                 </div>
             </div>
@@ -74,7 +77,7 @@
             <div class="bg-slate-800/60 border border-slate-700/80 p-5 rounded-2xl shadow-lg">
                 <h2 class="text-lg font-bold text-emerald-300 mb-3">Kelola Kategori & Menu</h2>
                 
-                <!-- Form Tambah Kategori -->
+                <!-- Form Tambah Kategori dengan Pilihan Warna -->
                 <div class="flex gap-2 mb-4">
                     <input type="text" id="newCategoryName" placeholder="Nama Kategori Baru" class="flex-grow bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-emerald-500">
                     <input type="color" id="newCategoryColor" value="#10b981" class="w-10 h-10 bg-slate-900 border border-slate-700 rounded-xl cursor-pointer p-1">
@@ -84,18 +87,14 @@
                 <!-- Form Tambah Menu -->
                 <div class="grid grid-cols-1 sm:grid-cols-4 gap-2 mb-4">
                     <input type="text" id="newMenuName" placeholder="Nama Menu" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-emerald-500">
-                    <select id="newMenuCategory" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-emerald-500">
-                        <!-- Dynamic Categories -->
-                    </select>
+                    <select id="newMenuCategory" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-emerald-500"></select>
                     <input type="number" id="newMenuPrice" placeholder="Harga (Rp)" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-emerald-500">
                     <button onclick="addMenuItem()" class="bg-cyan-600 hover:bg-cyan-500 text-white px-4 py-2 rounded-xl text-sm font-medium transition shadow-md">Tambah Menu</button>
                 </div>
             </div>
 
-            <!-- Daftar Menu Card Grid (Tanpa Foto) -->
-            <div id="masterMenuList" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                <!-- Diisi via JavaScript -->
-            </div>
+            <!-- Daftar Menu Card Grid (Tanpa Foto, Vertikal, Warna Kategori) -->
+            <div id="masterMenuList" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3"></div>
         </div>
 
         <!-- ================= TAB 2 (KASIR / TRANSAKSI) ================= -->
@@ -103,22 +102,13 @@
             <div class="bg-slate-800/60 border border-slate-700/80 p-5 rounded-2xl shadow-lg">
                 <h2 class="text-lg font-bold text-emerald-300 mb-3">POS / Transaksi Penjualan</h2>
                 
-                <!-- Filter Kategori Button Group -->
-                <div id="posCategoryFilter" class="flex flex-wrap gap-2 mb-4">
-                    <!-- Filter buttons -->
-                </div>
+                <div id="posCategoryFilter" class="flex flex-wrap gap-2 mb-4"></div>
 
-                <!-- Grid Menu POS -->
-                <div id="posMenuGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6">
-                    <!-- Diisi via JavaScript -->
-                </div>
+                <div id="posMenuGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6"></div>
 
-                <!-- Keranjang & Pembayaran -->
                 <div class="border-t border-slate-700 pt-4">
                     <h3 class="text-sm font-semibold text-slate-200 mb-2">Keranjang Pesanan</h3>
-                    <div id="cartList" class="space-y-2 mb-3 max-h-48 overflow-y-auto pr-1">
-                        <!-- Item keranjang -->
-                    </div>
+                    <div id="cartList" class="space-y-2 mb-3 max-h-48 overflow-y-auto pr-1"></div>
                     
                     <div class="flex flex-col sm:flex-row justify-between items-center gap-3 bg-slate-900 p-3 rounded-2xl border border-slate-700">
                         <div>
@@ -127,11 +117,11 @@
                         </div>
                         <div class="flex gap-2 w-full sm:w-auto">
                             <select id="paymentChannel" class="bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none">
-                                <option value="Cash">Cash</option>
-                                <option value="QRIS">QRIS</option>
-                                <option value="Grab">Grab</option>
-                                <option value="Shopee">Shopee</option>
-                                <option value="Gofood">Gofood</option>
+                                <option value="Cash">Cash (Offline)</option>
+                                <option value="QRIS">QRIS (Offline)</option>
+                                <option value="Grab">Grab (Online)</option>
+                                <option value="Shopee">Shopee (Online)</option>
+                                <option value="Gofood">Gofood (Online)</option>
                             </select>
                             <button onclick="checkoutOrder()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-2 rounded-xl text-sm font-medium transition shadow-md flex-grow sm:flex-grow-0">Proses Transaksi</button>
                         </div>
@@ -139,11 +129,19 @@
                 </div>
             </div>
 
-            <!-- Daftar Transaksi Terakhir -->
-            <div class="bg-slate-800/60 border border-slate-700/80 p-5 rounded-2xl shadow-lg">
-                <h3 class="text-md font-semibold text-slate-200 mb-3">Riwayat Transaksi Terbaru</h3>
-                <div id="recentTransactionsList" class="space-y-2">
-                    <p class="text-xs text-slate-500 italic">Belum ada transaksi.</p>
+            <!-- Riwayat dengan penomoran dinamis Penjualan & KOL -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="bg-slate-800/60 border border-slate-700/80 p-4 rounded-2xl shadow-lg">
+                    <h3 class="text-sm font-semibold text-emerald-300 mb-2">Penjualan (Penjualan 1, 2...)</h3>
+                    <div id="salesListContainer" class="space-y-2 max-h-40 overflow-y-auto">
+                        <p class="text-xs text-slate-500 italic">Belum ada transaksi.</p>
+                    </div>
+                </div>
+                <div class="bg-slate-800/60 border border-slate-700/80 p-4 rounded-2xl shadow-lg">
+                    <h3 class="text-sm font-semibold text-pink-400 mb-2">KOL (KOL 1, 2...)</h3>
+                    <div id="kolListContainer" class="space-y-2 max-h-40 overflow-y-auto">
+                        <p class="text-xs text-slate-500 italic">Belum ada data KOL.</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -158,10 +156,8 @@
                     <input type="text" id="openUangInput" oninput="formatRupiahInput(this)" placeholder="0" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-emerald-500">
                 </div>
 
-                <h3 class="text-sm font-semibold text-slate-200 mb-2">Matrix Pengeluaran</h3>
-                <div id="expenseRows" class="space-y-2 mb-3">
-                    <!-- Dynamic Expense Rows -->
-                </div>
+                <h3 class="text-sm font-semibold text-slate-200 mb-2">Matrix Pengeluaran (Item, Harga, Qty)</h3>
+                <div id="expenseRows" class="space-y-2 mb-3"></div>
                 <button onclick="addExpenseRow()" class="bg-slate-700 hover:bg-slate-600 text-slate-200 px-4 py-2 rounded-xl text-xs font-medium transition shadow-md">+ Tambah Baris Pengeluaran</button>
             </div>
         </div>
@@ -170,9 +166,9 @@
         <div id="tab-export" class="tab-content space-y-4">
             <div class="bg-slate-800/60 border border-slate-700/80 p-5 rounded-2xl shadow-lg">
                 <h2 class="text-lg font-bold text-emerald-300 mb-3">Export Laporan Chat Format</h2>
-                <p class="text-xs text-slate-400 mb-3">Pratinjau laporan harian yang siap disalin untuk dikirim ke grup laporan.</p>
+                <p class="text-xs text-slate-400 mb-3">Pratinjau laporan lengkap siap salin ke grup chat.</p>
                 
-                <textarea id="exportReportText" readonly rows="10" class="w-full bg-slate-900 border border-slate-700 rounded-2xl p-3 text-xs text-slate-300 font-mono focus:outline-none mb-3"></textarea>
+                <textarea id="exportReportText" readonly rows="12" class="w-full bg-slate-900 border border-slate-700 rounded-2xl p-3 text-xs text-slate-300 font-mono focus:outline-none mb-3"></textarea>
                 
                 <button onclick="copyReportText()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-medium px-5 py-2.5 rounded-xl text-sm transition shadow-md w-full sm:w-auto">Salin Laporan ke Clipboard</button>
             </div>
@@ -192,14 +188,6 @@
                         <label class="block text-xs text-slate-400 mb-1">Ganti Nama Kasir</label>
                         <input type="text" id="settingCashierName" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-200 focus:outline-none focus:border-emerald-500">
                     </div>
-                    <div>
-                        <label class="block text-xs text-slate-400 mb-1">Pilih Warna Utama Tema</label>
-                        <select id="settingThemeColor" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-200 focus:outline-none">
-                            <option value="emerald">Emerald Modern</option>
-                            <option value="cyan">Cyan Neon</option>
-                            <option value="violet">Violet Deep</option>
-                        </select>
-                    </div>
                     <button onclick="saveSettings()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-medium px-5 py-2 rounded-xl text-sm transition shadow-md">Simpan Pengaturan</button>
                 </div>
             </div>
@@ -207,12 +195,12 @@
 
     </main>
 
-    <!-- MODERN NOTIFICATION POPUP (SENADA DENGAN TAB 2) -->
+    <!-- MODERN NOTIFICATION POPUP (ROUNDED) -->
     <div id="appNotification" class="fixed bottom-20 right-4 bg-emerald-600 text-white px-4 py-3 rounded-2xl shadow-xl transform translate-y-20 opacity-0 transition-all duration-300 z-50 text-xs font-medium flex items-center gap-2 border border-emerald-500">
         <span>✅</span> <span id="notificationText">Berhasil menyimpan data!</span>
     </div>
 
-    <!-- BOTTOM NAVIGATION BAR (ROUNDED MODERN) -->
+    <!-- BOTTOM NAVIGATION BAR -->
     <nav class="bg-slate-950/90 backdrop-blur-md border-t border-slate-800 p-2 fixed bottom-0 left-0 right-0 z-40 rounded-t-2xl shadow-2xl">
         <div class="max-w-4xl mx-auto grid grid-cols-6 gap-1 text-center text-[10px] font-medium text-slate-400">
             <button onclick="switchTab('home')" id="nav-home" class="py-2 rounded-xl hover:bg-slate-800 transition text-emerald-400 flex flex-col items-center">
@@ -236,13 +224,11 @@
         </div>
     </nav>
 
-    <!-- JAVASCRIPT LOGIC -->
+    <!-- JAVASCRIPT LOGIC LENGKAP -->
     <script>
-        // State Data
         let appData = {
             outletName: "Outlet Utama",
             cashierName: "Admin",
-            shiftTime: "08:00",
             date: new Date().toISOString().split('T')[0],
             categories: [
                 { id: 'cat1', name: 'Makanan', color: '#f59e0b' },
@@ -260,7 +246,6 @@
             expenses: [{ item: '', price: 0, qty: 1 }]
         };
 
-        // Inisialisasi Tampilan
         window.onload = function() {
             updateHeaderDateTime();
             renderCategories();
@@ -272,7 +257,6 @@
             updateDashboardSummaries();
             generateReportText();
             
-            // Sync settings input
             document.getElementById('settingOutletName').value = appData.outletName;
             document.getElementById('settingCashierName').value = appData.cashierName;
         };
@@ -320,7 +304,6 @@
             showNotification("Pengaturan dasar berhasil disimpan!");
         }
 
-        // Render Kategori
         function renderCategories() {
             const catSelect = document.getElementById('newMenuCategory');
             catSelect.innerHTML = '';
@@ -340,7 +323,6 @@
             showNotification("Kategori baru berhasil ditambahkan!");
         }
 
-        // Render Menu List (Tab 1 - Card Vertical Tanpa Foto dengan Warna Kategori)
         function renderMenuList() {
             const container = document.getElementById('masterMenuList');
             container.innerHTML = '';
@@ -385,7 +367,6 @@
             showNotification("Menu berhasil dihapus.");
         }
 
-        // POS Tab Logic
         let activePosCategory = 'All';
 
         function renderPosCategoryFilter() {
@@ -407,7 +388,6 @@
         function renderPosMenuGrid() {
             const grid = document.getElementById('posMenuGrid');
             grid.innerHTML = '';
-            
             const filtered = activePosCategory === 'All' ? appData.menuItems : appData.menuItems.filter(m => m.category === activePosCategory);
             
             filtered.forEach(item => {
@@ -426,13 +406,8 @@
         function addToCart(menuId) {
             const item = appData.menuItems.find(m => m.id === menuId);
             if(!item) return;
-            
             const existing = appData.cart.find(c => c.id === menuId);
-            if(existing) {
-                existing.qty++;
-            } else {
-                appData.cart.push({ ...item, qty: 1 });
-            }
+            if(existing) { existing.qty++; } else { appData.cart.push({ ...item, qty: 1 }); }
             renderCart();
         }
 
@@ -466,16 +441,13 @@
 
         function updateCartQty(index, delta) {
             appData.cart[index].qty += delta;
-            if(appData.cart[index].qty <= 0) {
-                appData.cart.splice(index, 1);
-            }
+            if(appData.cart[index].qty <= 0) { appData.cart.splice(index, 1); }
             renderCart();
         }
 
         function checkoutOrder() {
             if(appData.cart.length === 0) return;
             const channel = document.getElementById('paymentChannel').value;
-            
             let totalAmount = appData.cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
             let isKOL = appData.cart.some(i => i.category === 'KOL');
 
@@ -490,34 +462,52 @@
 
             appData.cart = [];
             renderCart();
-            renderRecentTransactions();
+            renderTransactionsList();
             updateDashboardSummaries();
             showNotification("Transaksi berhasil diproses!");
         }
 
-        function renderRecentTransactions() {
-            const container = document.getElementById('recentTransactionsList');
-            container.innerHTML = '';
-            
-            if(appData.transactions.length === 0) {
-                container.innerHTML = '<p class="text-xs text-slate-500 italic">Belum ada transaksi.</p>';
-                return;
-            }
+        function renderTransactionsList() {
+            const salesContainer = document.getElementById('salesListContainer');
+            const kolContainer = document.getElementById('kolListContainer');
+            salesContainer.innerHTML = '';
+            kolContainer.innerHTML = '';
+
+            let salesCount = 1;
+            let kolCount = 1;
+            let hasSales = false;
+            let hasKOL = false;
 
             appData.transactions.slice().reverse().forEach(trx => {
-                container.innerHTML += `
-                    <div class="bg-slate-900 p-3 rounded-xl border border-slate-700 flex justify-between items-center text-xs">
-                        <div>
-                            <p class="font-bold text-slate-200">${trx.channel} - Rp ${trx.total.toLocaleString('id-ID')}</p>
-                            <p class="text-[10px] text-slate-400">Pukul ${trx.time}</p>
+                if(trx.isKOL) {
+                    hasKOL = true;
+                    kolContainer.innerHTML += `
+                        <div class="bg-slate-900 p-2.5 rounded-xl border border-slate-700 text-xs flex justify-between items-center">
+                            <div>
+                                <p class="font-bold text-pink-300">KOL ${kolCount++}</p>
+                                <p class="text-[10px] text-slate-400">${trx.items.map(i => i.name + ' (' + i.qty + ')').join(', ')}</p>
+                            </div>
+                            <span class="text-[10px] text-slate-500">${trx.time}</span>
                         </div>
-                        <span class="text-[10px] bg-emerald-600/20 text-emerald-300 px-2.5 py-1 rounded-xl font-medium">Sukses</span>
-                    </div>
-                `;
+                    `;
+                } else {
+                    hasSales = true;
+                    salesContainer.innerHTML += `
+                        <div class="bg-slate-900 p-2.5 rounded-xl border border-slate-700 text-xs flex justify-between items-center">
+                            <div>
+                                <p class="font-bold text-emerald-300">Penjualan ${salesCount++} (${trx.channel})</p>
+                                <p class="text-[10px] text-slate-400">Rp ${trx.total.toLocaleString('id-ID')}</p>
+                            </div>
+                            <span class="text-[10px] text-slate-500">${trx.time}</span>
+                        </div>
+                    `;
+                }
             });
+
+            if(!hasSales) salesContainer.innerHTML = '<p class="text-xs text-slate-500 italic">Belum ada penjualan.</p>';
+            if(!hasKOL) kolContainer.innerHTML = '<p class="text-xs text-slate-500 italic">Belum ada data KOL.</p>';
         }
 
-        // Keuangan & Modal
         function formatRupiahInput(input) {
             let val = input.value.replace(/[^,\d]/g, '').toString();
             appData.openUang = parseFloat(val) || 0;
@@ -527,7 +517,6 @@
         function renderExpenses() {
             const container = document.getElementById('expenseRows');
             container.innerHTML = '';
-            
             appData.expenses.forEach((exp, idx) => {
                 container.innerHTML += `
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
@@ -559,21 +548,24 @@
             updateDashboardSummaries();
         }
 
-        // Summary Calculations
         function updateDashboardSummaries() {
             let totalSales = appData.transactions.reduce((sum, t) => sum + t.total, 0);
+            let offlineSales = appData.transactions.filter(t => ['Cash', 'QRIS'].includes(t.channel)).reduce((sum, t) => sum + t.total, 0);
+            let onlineSales = appData.transactions.filter(t => ['Grab', 'Shopee', 'Gofood'].includes(t.channel)).reduce((sum, t) => sum + t.total, 0);
             let totalExpense = appData.expenses.reduce((sum, e) => sum + (e.price * e.qty), 0);
             let cashSales = appData.transactions.filter(t => t.channel === 'Cash').reduce((sum, t) => sum + t.total, 0);
             let closeMoney = (cashSales + appData.openUang) - totalExpense;
 
             document.getElementById('homeTotalSales').innerText = `Rp ${totalSales.toLocaleString('id-ID')}`;
+            document.getElementById('homeBreakdownSales').innerText = `Off: Rp ${offlineSales.toLocaleString('id-ID')} | On: Rp ${onlineSales.toLocaleString('id-ID')}`;
             document.getElementById('homeTotalExpense').innerText = `Rp ${totalExpense.toLocaleString('id-ID')}`;
             document.getElementById('homeCloseMoney').innerText = `Rp ${closeMoney.toLocaleString('id-ID')}`;
         }
 
-        // Export Laporan Generator
         function generateReportText() {
             let totalSales = appData.transactions.reduce((sum, t) => sum + t.total, 0);
+            let offlineSales = appData.transactions.filter(t => ['Cash', 'QRIS'].includes(t.channel)).reduce((sum, t) => sum + t.total, 0);
+            let onlineSales = appData.transactions.filter(t => ['Grab', 'Shopee', 'Gofood'].includes(t.channel)).reduce((sum, t) => sum + t.total, 0);
             let totalExpense = appData.expenses.reduce((sum, e) => sum + (e.price * e.qty), 0);
             let cashSales = appData.transactions.filter(t => t.channel === 'Cash').reduce((sum, t) => sum + t.total, 0);
             let closeMoney = (cashSales + appData.openUang) - totalExpense;
@@ -582,6 +574,8 @@
             report += `📅 Tanggal: ${appData.date}\n`;
             report += `👤 Kasir: ${appData.cashierName}\n\n`;
             report += `💰 Total Penjualan: Rp ${totalSales.toLocaleString('id-ID')}\n`;
+            report += `   - Offline: Rp ${offlineSales.toLocaleString('id-ID')}\n`;
+            report += `   - Online: Rp ${onlineSales.toLocaleString('id-ID')}\n\n`;
             report += `💸 Total Pengeluaran: Rp ${totalExpense.toLocaleString('id-ID')}\n`;
             report += `🔒 Close Uang Outlet: Rp ${closeMoney.toLocaleString('id-ID')}\n`;
 

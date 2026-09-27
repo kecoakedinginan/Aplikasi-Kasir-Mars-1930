@@ -504,8 +504,8 @@
     };
 
     let riwayatTransaksiLog = [
-        { id: 1, metode: "Cash", rincian: "Terbul Coklat (1), Terbul Keju (1)", total: 36000, rawItems: [{nama: "Terbul Coklat", qty: 1}, {nama: "Terbul Keju", qty: 1}], metodeKey: "cash" },
-        { id: 2, metode: "Qris", rincian: "Martabak Istimewa (1), Terbul CocoCrancy (1), Terbul Keju (1), Paket 1 (1)", total: 113000, rawItems: [{nama: "Martabak Istimewa", qty: 1}, {nama: "Terbul CocoCrancy", qty: 1}, {nama: "Terbul Keju", qty: 1}, {nama: "Paket 1", qty: 1}], metodeKey: "qris" }
+        { id: 1, jenis: "Penjualan", metode: "Cash", rincian: "Terbul Coklat (1), Terbul Keju (1)", total: 36000, rawItems: [{nama: "Terbul Coklat", qty: 1}, {nama: "Terbul Keju", qty: 1}], metodeKey: "cash" },
+        { id: 2, jenis: "Penjualan", metode: "Qris", rincian: "Martabak Istimewa (1), Terbul CocoCrancy (1), Terbul Keju (1), Paket 1 (1)", total: 113000, rawItems: [{nama: "Martabak Istimewa", qty: 1}, {nama: "Terbul CocoCrancy", qty: 1}, {nama: "Terbul Keju", qty: 1}, {nama: "Paket 1", qty: 1}], metodeKey: "qris" }
     ];
 
     let listPengeluaranData = [
@@ -709,6 +709,7 @@
         let metodeSelect = document.getElementById('metodeBayar');
         let metodeKey = metodeSelect.value;
         let metodeText = metodeSelect.options[metodeSelect.selectedIndex].text;
+        let jenisTransaksi = metodeKey === 'kol' ? 'KOL' : 'Penjualan';
         
         let totalTransaksi = activeCart.reduce((sum, item) => sum + (item.harga * item.qty), 0);
         let itemRincianArr = activeCart.map(item => `${item.nama} (${item.qty})`);
@@ -726,6 +727,7 @@
 
         riwayatTransaksiLog.push({
             id: Date.now(),
+            jenis: jenisTransaksi,
             metode: metodeText,
             rincian: itemRincianArr.join(', '),
             total: metodeKey === 'kol' ? 0 : totalTransaksi,
@@ -775,13 +777,31 @@
             return;
         }
         container.innerHTML = '';
+        
+        // Hitung nomor urut terpisah untuk Penjualan dan KOL
+        let countPenjualan = 0;
+        let countKol = 0;
+
         riwayatTransaksiLog.forEach((log, idx) => {
-            let nomorPelanggan = idx + 1;
-            let displayNominal = log.metodeKey === 'kol' ? 'Non-Jualan' : `Rp ${formatRupiah(log.total)}`;
+            let labelNomor = "";
+            let displayNominal = "";
+            let badgeColor = "var(--accent-color)";
+
+            if (log.jenis === 'KOL') {
+                countKol++;
+                labelNomor = `KOL ${countKol}`;
+                displayNominal = 'Non-Jualan';
+                badgeColor = "var(--kol-color)";
+            } else {
+                countPenjualan++;
+                labelNomor = `Penjualan ${countPenjualan}`;
+                displayNominal = `Rp ${formatRupiah(log.total)}`;
+            }
+
             container.innerHTML += `
                 <div class="history-item">
                     <div>
-                        <b>Data ${nomorPelanggan}</b> <span style="color:var(--accent-color);">[${log.metode}]</span> - ${displayNominal}<br>
+                        <b>${labelNomor}</b> <span style="color:${badgeColor};">[${log.metode}]</span> - ${displayNominal}<br>
                         <span style="color: var(--muted-text);">${log.rincian}</span>
                     </div>
                     <button class="btn btn-danger" style="width:auto; padding:3px 8px; margin:0; font-size:0.75rem;" onclick="hapusTransaksiKasir(${idx})">Hapus</button>
